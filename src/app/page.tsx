@@ -132,15 +132,6 @@ export default function SurveyPage() {
         </div>
       </header>
 
-      {/* Progress */}
-      <div className="sticky top-0 z-50 bg-[var(--bg)]">
-        <div className="h-1 bg-[var(--border)]">
-          <div
-            className="h-full bg-[var(--dark)] transition-all duration-400 ease-out"
-            style={{ width: `${progress()}%` }}
-          />
-        </div>
-      </div>
 
       {/* All Questions */}
       <div className="bg-[var(--card)] mx-3 rounded-b-[20px] px-6 py-9">
