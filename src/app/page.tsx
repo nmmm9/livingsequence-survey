@@ -50,7 +50,23 @@ export default function SurveyPage() {
   const router = useRouter();
   const [form, setForm] = useState<FormData>(initialData);
   const [submitting, setSubmitting] = useState(false);
+  const [modal, setModal] = useState<{ show: boolean; message: string; qId: string }>({
+    show: false,
+    message: "",
+    qId: "",
+  });
   const startTime = useRef(Date.now());
+
+  const REQUIRED_FIELDS: { key: string; label: string; check: () => boolean }[] = [
+    { key: "q2", label: "02. 고객이 인테리어 업체 선택 시 기준", check: () => !!form.q2.value },
+    { key: "q7", label: "07. 취향Kit 상담 시간 단축 여부", check: () => !!form.q7.value },
+    { key: "q9", label: "09. 매칭 추천의 계약 전환 도움 여부", check: () => !!form.q9.value },
+    { key: "q10", label: "10. 브랜드 프로필 제작 관심 여부", check: () => !!form.q10.value },
+    { key: "q11", label: "11. 가장 매력적인 솔루션", check: () => form.q11.values.length > 0 },
+    { key: "q12", label: "12. 실효성 낮은 솔루션", check: () => form.q12.values.length > 0 },
+    { key: "q13", label: "13. 가장 개선 기대 업무", check: () => form.q13.values.length > 0 },
+    { key: "q15", label: "15. 가장 우려되는 점", check: () => form.q15.values.length > 0 },
+  ];
 
   const progress = useCallback(() => {
     let answered = 0;
@@ -76,6 +92,12 @@ export default function SurveyPage() {
   }, [form]);
 
   const handleSubmit = async () => {
+    const missing = REQUIRED_FIELDS.find((f) => !f.check());
+    if (missing) {
+      setModal({ show: true, message: `"${missing.label}" 항목을 선택해주세요.`, qId: missing.key });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/submit", {
@@ -130,342 +152,110 @@ export default function SurveyPage() {
         </div>
       </div>
 
-      {/* Section 1 */}
-      <Section first>
-        <QuestionTextarea
-          num="01"
-          label="오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요."
-          value={form.q1}
-          onChange={(v) => setForm({ ...form, q1: v })}
-        />
-        <Divider />
-        <QuestionRadio
-          num="02"
-          label="대표님이 생각하시기에, 고객이 인테리어 업체를 선택할 때 가장 중요하게 보는 기준은 무엇입니까?"
-          options={["가격/견적", "시공 사례/포트폴리오", "지인 추천/입소문", "디자인 감각/스타일 적합성", "소통/응대 속도"]}
-          hasOther
-          value={form.q2}
-          onChange={(v) => setForm({ ...form, q2: v })}
-        />
-        <Divider />
-        <QuestionTextarea
-          num="03"
-          label="지금까지 경험 중 계약이 무산된 가장 흔한 이유는?"
-          value={form.q3}
-          onChange={(v) => setForm({ ...form, q3: v })}
-        />
-        <Divider />
-        <QuestionTextarea
-          num="04"
-          label="시공 후 고객 불만이 발생했을 때, 가장 어려웠던 점은?"
-          value={form.q4}
-          onChange={(v) => setForm({ ...form, q4: v })}
-        />
-        <Divider />
-        <QuestionTextarea
-          num="05"
-          label="현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?"
-          value={form.q5}
-          onChange={(v) => setForm({ ...form, q5: v })}
-        />
-        <Divider />
-        <QuestionTextarea
-          num="06"
-          label="플랫폼이 아닌, 대표님이 직접 해결하고 싶은 업무상 가장 큰 고민은?"
-          optional
-          value={form.q6}
-          onChange={(v) => setForm({ ...form, q6: v })}
-        />
-      </Section>
+      {/* All Questions */}
+      <div className="bg-[var(--card)] mx-3 rounded-b-[20px] px-6 py-9">
 
-      {/* Section 2 */}
-      <Section>
-        <Question num="07" label="취향Kit을 통해 고객 정보, 스타일이 사전에 정리되어 전달된다면, 초기 상담 시간이 줄어들 것 같습니까?">
-          <RadioGroup
-            name="q7"
-            options={["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"]}
-            value={form.q7.value}
-            onChange={(v) => {
-              const positive = v === "매우 그렇다" || v === "그렇다";
-              const negative = v === "아니다" || v === "전혀 아니다";
-              setForm({
-                ...form,
-                q7: {
-                  value: v,
-                  q7_1: positive ? form.q7.q7_1 : undefined,
-                  q7_2: negative ? form.q7.q7_2 : undefined,
-                },
-              });
-            }}
-          />
+        <QuestionTextarea num="01" label="오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요." optional value={form.q1} onChange={(v) => setForm({ ...form, q1: v })} />
+        <Divider />
+        <QuestionRadio id="q2" num="02" label="대표님이 생각하시기에, 고객이 인테리어 업체를 선택할 때 가장 중요하게 보는 기준은 무엇입니까?" options={["가격/견적", "시공 사례/포트폴리오", "지인 추천/입소문", "디자인 감각/스타일 적합성", "소통/응대 속도"]} hasOther value={form.q2} onChange={(v) => setForm({ ...form, q2: v })} />
+        <Divider />
+        <QuestionTextarea num="03" label="지금까지 경험 중 계약이 무산된 가장 흔한 이유는?" optional value={form.q3} onChange={(v) => setForm({ ...form, q3: v })} />
+        <Divider />
+        <QuestionTextarea num="04" label="시공 후 고객 불만이 발생했을 때, 가장 어려웠던 점은?" optional value={form.q4} onChange={(v) => setForm({ ...form, q4: v })} />
+        <Divider />
+        <QuestionTextarea num="05" label="현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?" optional value={form.q5} onChange={(v) => setForm({ ...form, q5: v })} />
+        <Divider />
+        <QuestionTextarea num="06" label="플랫폼이 아닌, 대표님이 직접 해결하고 싶은 업무상 가장 큰 고민은?" optional value={form.q6} onChange={(v) => setForm({ ...form, q6: v })} />
+        <Divider />
+
+        <Question id="q7" num="07" label="취향Kit을 통해 고객 정보, 스타일이 사전에 정리되어 전달된다면, 초기 상담 시간이 줄어들 것 같습니까?">
+          <RadioGroup name="q7" options={["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"]} value={form.q7.value} onChange={(v) => { const positive = v === "매우 그렇다" || v === "그렇다"; const negative = v === "아니다" || v === "전혀 아니다"; setForm({ ...form, q7: { value: v, q7_1: positive ? form.q7.q7_1 : undefined, q7_2: negative ? form.q7.q7_2 : undefined } }); }} />
           {(form.q7.value === "매우 그렇다" || form.q7.value === "그렇다") && (
             <SubQuestion label="어떤 부분에서 시간이 가장 줄어들 것 같습니까?">
-              <RadioGroup
-                name="q7_1"
-                options={["고객 취향/스타일 파악", "예산 범위 확인", "공간 구조/활용 방식 이해"]}
-                hasOther
-                value={form.q7.q7_1?.value ?? ""}
-                otherValue={form.q7.q7_1?.other}
-                onChange={(v) => setForm({ ...form, q7: { ...form.q7, q7_1: { value: v } } })}
-                onOtherChange={(o) => setForm({ ...form, q7: { ...form.q7, q7_1: { value: "기타", other: o } } })}
-              />
+              <RadioGroup name="q7_1" options={["고객 취향/스타일 파악", "예산 범위 확인", "공간 구조/활용 방식 이해"]} hasOther value={form.q7.q7_1?.value ?? ""} otherValue={form.q7.q7_1?.other} onChange={(v) => setForm({ ...form, q7: { ...form.q7, q7_1: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q7: { ...form.q7, q7_1: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
           {(form.q7.value === "아니다" || form.q7.value === "전혀 아니다") && (
             <SubQuestion label="상담 시간이 줄지 않을 것 같은 이유는?">
-              <textarea
-                className="survey-textarea"
-                placeholder="자유롭게 적어주세요"
-                value={form.q7.q7_2 ?? ""}
-                onChange={(e) => setForm({ ...form, q7: { ...form.q7, q7_2: e.target.value } })}
-              />
+              <textarea className="survey-textarea" placeholder="자유롭게 적어주세요" value={form.q7.q7_2 ?? ""} onChange={(e) => setForm({ ...form, q7: { ...form.q7, q7_2: e.target.value } })} />
             </SubQuestion>
           )}
         </Question>
-
         <Divider />
 
-        <QuestionTextarea
-          num="08"
-          label="취향Kit에 있으면 좋겠다고 생각하는 고객 정보가 있다면?"
-          value={form.q8}
-          onChange={(v) => setForm({ ...form, q8: v })}
-        />
-
+        <QuestionTextarea num="08" label="취향Kit에 있으면 좋겠다고 생각하는 고객 정보가 있다면?" optional value={form.q8} onChange={(v) => setForm({ ...form, q8: v })} />
         <Divider />
 
-        <Question num="09" label="고객의 취향 분석 결과를 기반으로 매칭된 업체 추천 리스트를 고객이 받아본다면, 기존 상담 방식 대비 계약 전환에 도움이 될 것 같습니까?">
-          <RadioGroup
-            name="q9"
-            options={["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"]}
-            value={form.q9.value}
-            onChange={(v) => {
-              const positive = v === "매우 그렇다" || v === "그렇다";
-              const negative = v === "아니다" || v === "전혀 아니다";
-              setForm({
-                ...form,
-                q9: {
-                  value: v,
-                  q9_1: positive ? form.q9.q9_1 : undefined,
-                  q9_2: negative ? form.q9.q9_2 : undefined,
-                },
-              });
-            }}
-          />
+        <Question id="q9" num="09" label="고객의 취향 분석 결과를 기반으로 매칭된 업체 추천 리스트를 고객이 받아본다면, 기존 상담 방식 대비 계약 전환에 도움이 될 것 같습니까?">
+          <RadioGroup name="q9" options={["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"]} value={form.q9.value} onChange={(v) => { const positive = v === "매우 그렇다" || v === "그렇다"; const negative = v === "아니다" || v === "전혀 아니다"; setForm({ ...form, q9: { value: v, q9_1: positive ? form.q9.q9_1 : undefined, q9_2: negative ? form.q9.q9_2 : undefined } }); }} />
           {(form.q9.value === "매우 그렇다" || form.q9.value === "그렇다") && (
             <SubQuestion label="가장 도움이 될 것 같은 이유는?">
-              <RadioGroup
-                name="q9_1"
-                options={[
-                  "고객이 이미 우리 스타일을 이해하고 오니까",
-                  "초기 신뢰가 형성된 상태에서 상담 시작",
-                  "불필요한 비교 견적 경쟁이 줄어들 것 같아서",
-                ]}
-                hasOther
-                value={form.q9.q9_1?.value ?? ""}
-                otherValue={form.q9.q9_1?.other}
-                onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: v } } })}
-                onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: "기타", other: o } } })}
-              />
+              <RadioGroup name="q9_1" options={["고객이 이미 우리 스타일을 이해하고 오니까", "초기 신뢰가 형성된 상태에서 상담 시작", "불필요한 비교 견적 경쟁이 줄어들 것 같아서"]} hasOther value={form.q9.q9_1?.value ?? ""} otherValue={form.q9.q9_1?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
           {(form.q9.value === "아니다" || form.q9.value === "전혀 아니다") && (
             <SubQuestion label="매칭 추천이 계약에 도움이 안 될 것 같은 이유는?">
-              <RadioGroup
-                name="q9_2"
-                options={[
-                  "고객은 결국 가격으로 결정한다",
-                  "AI가 우리 업체 강점을 제대로 파악하기 어렵다",
-                  "추천 리스트에 경쟁 업체도 같이 나오면 의미 없다",
-                ]}
-                hasOther
-                value={form.q9.q9_2?.value ?? ""}
-                otherValue={form.q9.q9_2?.other}
-                onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: v } } })}
-                onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: "기타", other: o } } })}
-              />
+              <RadioGroup name="q9_2" options={["고객은 결국 가격으로 결정한다", "AI가 우리 업체 강점을 제대로 파악하기 어렵다", "추천 리스트에 경쟁 업체도 같이 나오면 의미 없다"]} hasOther value={form.q9.q9_2?.value ?? ""} otherValue={form.q9.q9_2?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
         </Question>
-
         <Divider />
 
-        <Question num="10" label="브랜드 프로필(포트폴리오 리뉴얼)을 리빙시퀀스가 제작해드린다면 관심이 있으십니까?">
-          <RadioGroup
-            name="q10"
-            options={["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"]}
-            value={form.q10.value}
-            onChange={(v) => {
-              setForm({
-                ...form,
-                q10: {
-                  value: v,
-                  q10_2: v === "관심 없다" ? form.q10.q10_2 : undefined,
-                },
-              });
-            }}
-          />
+        <Question id="q10" num="10" label="브랜드 프로필(포트폴리오 리뉴얼)을 리빙시퀀스가 제작해드린다면 관심이 있으십니까?">
+          <RadioGroup name="q10" options={["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"]} value={form.q10.value} onChange={(v) => { setForm({ ...form, q10: { value: v, q10_2: v === "관심 없다" ? form.q10.q10_2 : undefined } }); }} />
           {form.q10.value === "관심 없다" && (
             <SubQuestion label="관심이 없는 이유는?">
-              <RadioGroup
-                name="q10_2"
-                options={["이미 충분히 갖추고 있다", "포트폴리오보다 실제 고객 유입이 중요하다"]}
-                hasOther
-                value={form.q10.q10_2?.value ?? ""}
-                otherValue={form.q10.q10_2?.other}
-                onChange={(v) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: v } } })}
-                onOtherChange={(o) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: "기타", other: o } } })}
-              />
+              <RadioGroup name="q10_2" options={["이미 충분히 갖추고 있다", "포트폴리오보다 실제 고객 유입이 중요하다"]} hasOther value={form.q10.q10_2?.value ?? ""} otherValue={form.q10.q10_2?.other} onChange={(v) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
         </Question>
-      </Section>
+        <Divider />
 
-      {/* Section 3 */}
-      <Section>
-        <Question num="11" label="오늘 소개한 솔루션 중 가장 매력적인 것은?" optional="복수 선택 가능">
-          <CheckboxGroup
-            name="q11"
-            options={[
-              "AI 취향 매칭 (취향Kit)",
-              "올인원 공정관리 APP",
-              "자동 보험 적용",
-              "AI 콘텐츠(영상/사진) 자동 생성",
-              "브랜드 프로필 제작",
-            ]}
-            hasOther
-            values={form.q11.values}
-            otherValue={form.q11.other}
-            onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })}
-            onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })}
-          />
+        <Question id="q11" num="11" label="오늘 소개한 솔루션 중 가장 매력적인 것은?" optional="복수 선택 가능">
+          <CheckboxGroup name="q11" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠(영상/사진) 자동 생성", "브랜드 프로필 제작"]} hasOther values={form.q11.values} otherValue={form.q11.other} onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })} onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })} />
           <div className="mt-5">
             <div className="text-[13px] font-medium text-[var(--teal)] mb-3">
               선택한 이유를 간단히 적어주세요 <span className="text-[11px] text-[var(--muted)] font-normal ml-0.5">선택</span>
             </div>
-            <textarea
-              className="survey-textarea"
-              placeholder="자유롭게 적어주세요"
-              value={form.q11.reason ?? ""}
-              onChange={(e) => setForm({ ...form, q11: { ...form.q11, reason: e.target.value } })}
-            />
+            <textarea className="survey-textarea" placeholder="자유롭게 적어주세요" value={form.q11.reason ?? ""} onChange={(e) => setForm({ ...form, q11: { ...form.q11, reason: e.target.value } })} />
           </div>
         </Question>
-
         <Divider />
 
-        <Question num="12" label="반대로, 실효성이 낮을 것 같은 솔루션이 있다면?">
-          <CheckboxGroup
-            name="q12"
-            options={[
-              "AI 취향 매칭 (취향Kit)",
-              "올인원 공정관리 APP",
-              "자동 보험 적용",
-              "AI 콘텐츠 자동 생성",
-              "브랜드 프로필 제작",
-              "없다",
-            ]}
-            values={form.q12.values}
-            onChange={(vs) => setForm({ ...form, q12: { ...form.q12, values: vs } })}
-          />
+        <Question id="q12" num="12" label="반대로, 실효성이 낮을 것 같은 솔루션이 있다면?">
+          <CheckboxGroup name="q12" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "브랜드 프로필 제작", "없다"]} values={form.q12.values} onChange={(vs) => setForm({ ...form, q12: { ...form.q12, values: vs } })} />
           {form.q12.values.length > 0 && !form.q12.values.every((v) => v === "없다") && (
             <SubQuestion label="실효성이 낮다고 생각하는 이유는?">
-              <textarea
-                className="survey-textarea"
-                placeholder="자유롭게 적어주세요"
-                value={form.q12.reason ?? ""}
-                onChange={(e) => setForm({ ...form, q12: { ...form.q12, reason: e.target.value } })}
-              />
+              <textarea className="survey-textarea" placeholder="자유롭게 적어주세요" value={form.q12.reason ?? ""} onChange={(e) => setForm({ ...form, q12: { ...form.q12, reason: e.target.value } })} />
             </SubQuestion>
           )}
         </Question>
-
         <Divider />
 
-        <Question num="13" label="플랫폼을 통해 가장 개선되길 기대하는 업무는?" optional="복수 선택 가능">
-          <CheckboxGroup
-            name="q13"
-            options={[
-              "신규 고객 확보",
-              "초기 상담/니즈 파악",
-              "견적~계약 과정",
-              "시공 중 고객 소통",
-              "시공 후 클레임/AS 관리",
-              "브랜딩/마케팅",
-            ]}
-            hasOther
-            values={form.q13.values}
-            otherValue={form.q13.other}
-            onChange={(vs) => setForm({ ...form, q13: { ...form.q13, values: vs } })}
-            onOtherChange={(o) => setForm({ ...form, q13: { ...form.q13, other: o } })}
-          />
+        <Question id="q13" num="13" label="플랫폼을 통해 가장 개선되길 기대하는 업무는?" optional="복수 선택 가능">
+          <CheckboxGroup name="q13" options={["신규 고객 확보", "초기 상담/니즈 파악", "견적~계약 과정", "시공 중 고객 소통", "시공 후 클레임/AS 관리", "브랜딩/마케팅"]} hasOther values={form.q13.values} otherValue={form.q13.other} onChange={(vs) => setForm({ ...form, q13: { ...form.q13, values: vs } })} onOtherChange={(o) => setForm({ ...form, q13: { ...form.q13, other: o } })} />
         </Question>
-
         <Divider />
 
-        <QuestionTextarea
-          num="14"
-          label="이 플랫폼에 부족하다고 느끼는 기능이나 서비스가 있다면?"
-          value={form.q14}
-          onChange={(v) => setForm({ ...form, q14: v })}
-        />
-      </Section>
+        <QuestionTextarea num="14" label="이 플랫폼에 부족하다고 느끼는 기능이나 서비스가 있다면?" optional value={form.q14} onChange={(v) => setForm({ ...form, q14: v })} />
+        <Divider />
 
-      {/* Section 4 */}
-      <Section>
-        <Question num="15" label="가장 우려되는 점은?" optional="복수 선택 가능">
-          <CheckboxGroup
-            name="q15"
-            options={[
-              "실제 고객이 유입될지 불확실",
-              "대형 플랫폼과 경쟁 가능한지",
-              "AI 매칭의 정확도",
-              "아직 검증되지 않은 플랫폼이라 불안",
-              "데이터 보안/개인정보 문제",
-            ]}
-            hasOther
-            values={form.q15.values}
-            otherValue={form.q15.other}
-            onChange={(vs) => setForm({ ...form, q15: { ...form.q15, values: vs } })}
-            onOtherChange={(o) => setForm({ ...form, q15: { ...form.q15, other: o } })}
-          />
+        <Question id="q15" num="15" label="가장 우려되는 점은?" optional="복수 선택 가능">
+          <CheckboxGroup name="q15" options={["실제 고객이 유입될지 불확실", "대형 플랫폼과 경쟁 가능한지", "AI 매칭의 정확도", "아직 검증되지 않은 플랫폼이라 불안", "데이터 보안/개인정보 문제"]} hasOther values={form.q15.values} otherValue={form.q15.other} onChange={(vs) => setForm({ ...form, q15: { ...form.q15, values: vs } })} onOtherChange={(o) => setForm({ ...form, q15: { ...form.q15, other: o } })} />
           {form.q15.values.includes("실제 고객이 유입될지 불확실") && (
             <SubQuestion label="어느 정도의 고객 유입이 체감되어야 신뢰가 생기겠습니까?">
-              <RadioGroup
-                name="q15_1"
-                options={[
-                  "월 1~2건이라도 실제 계약으로 이어지면",
-                  "월 5건 이상 상담 유입",
-                  "월 10건 이상 상담 유입",
-                ]}
-                hasOther
-                value={form.q15.q15_1?.value ?? ""}
-                otherValue={form.q15.q15_1?.other}
-                onChange={(v) => setForm({ ...form, q15: { ...form.q15, q15_1: { value: v } } })}
-                onOtherChange={(o) => setForm({ ...form, q15: { ...form.q15, q15_1: { value: "기타", other: o } } })}
-              />
+              <RadioGroup name="q15_1" options={["월 1~2건이라도 실제 계약으로 이어지면", "월 5건 이상 상담 유입", "월 10건 이상 상담 유입"]} hasOther value={form.q15.q15_1?.value ?? ""} otherValue={form.q15.q15_1?.other} onChange={(v) => setForm({ ...form, q15: { ...form.q15, q15_1: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q15: { ...form.q15, q15_1: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
         </Question>
-
         <Divider />
 
-        <QuestionTextarea
-          num="16"
-          label="이 플랫폼과 함께 한다고 했을 때, 가장 불안한 시나리오는?"
-          value={form.q16}
-          onChange={(v) => setForm({ ...form, q16: v })}
-        />
-
+        <QuestionTextarea num="16" label="이 플랫폼과 함께 한다고 했을 때, 가장 불안한 시나리오는?" optional value={form.q16} onChange={(v) => setForm({ ...form, q16: v })} />
         <Divider />
 
-        <QuestionTextarea
-          num="17"
-          label="추가 의견이나 제안 사항"
-          value={form.q17}
-          onChange={(v) => setForm({ ...form, q17: v })}
-        />
-      </Section>
+        <QuestionTextarea num="17" label="추가 의견이나 제안 사항" optional value={form.q17} onChange={(v) => setForm({ ...form, q17: v })} />
+
+      </div>
 
       {/* Submit + Footer */}
       <div className="px-3 pb-3 mt-2.5">
@@ -487,6 +277,25 @@ export default function SurveyPage() {
           LIVING SEQUENCE
         </div>
       </footer>
+
+      {/* Modal */}
+      {modal.show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={() => setModal({ ...modal, show: false })}>
+          <div className="bg-white rounded-2xl p-6 mx-6 max-w-[320px] w-full" onClick={(e) => e.stopPropagation()}>
+            <p className="text-[15px] font-medium text-[var(--dark)] mb-5 leading-relaxed">{modal.message}</p>
+            <button
+              className="w-full py-3 bg-[var(--dark)] text-white rounded-xl text-sm font-medium"
+              onClick={() => {
+                setModal({ ...modal, show: false });
+                const el = document.getElementById(modal.qId);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            >
+              이동하기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -506,7 +315,7 @@ function Section({ children, first }: { children: React.ReactNode; first?: boole
 }
 
 function Divider() {
-  return <div className="h-px bg-[var(--border)] my-10" />;
+  return <div className="h-px bg-[var(--border)] my-14" />;
 }
 
 function Question({
@@ -514,14 +323,16 @@ function Question({
   label,
   optional,
   children,
+  id,
 }: {
   num: string;
   label: string;
   optional?: string;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
-    <div className="mb-11 last:mb-0">
+    <div id={id} className="mb-11 last:mb-0">
       <div className="font-figtree text-[11px] font-bold text-[#999] mb-2.5 tracking-[0.5px]">{num}</div>
       <div className="text-[15px] font-medium mb-[18px] leading-relaxed text-[var(--dark)]">
         {label}
@@ -558,6 +369,7 @@ function QuestionTextarea({
 }
 
 function QuestionRadio({
+  id,
   num,
   label,
   options,
@@ -565,6 +377,7 @@ function QuestionRadio({
   value,
   onChange,
 }: {
+  id?: string;
   num: string;
   label: string;
   options: string[];
@@ -573,7 +386,7 @@ function QuestionRadio({
   onChange: (v: RadioAnswer) => void;
 }) {
   return (
-    <Question num={num} label={label}>
+    <Question id={id} num={num} label={label}>
       <RadioGroup
         name={`main-${num}`}
         options={options}
@@ -615,13 +428,13 @@ function RadioGroup({
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
                       }`}
-          onClick={() => onChange(opt)}
+          onClick={() => onChange(value === opt ? "" : opt)}
         >
           <input
             type="radio"
             name={name}
             checked={value === opt}
-            onChange={() => onChange(opt)}
+            onChange={() => onChange(value === opt ? "" : opt)}
             className={`w-[18px] h-[18px] mr-3 shrink-0 ${
               value === opt ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
             }`}
@@ -637,13 +450,13 @@ function RadioGroup({
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
                       }`}
-          onClick={() => { if (value !== "기타") onChange("기타"); }}
+          onClick={() => onChange(value === "기타" ? "" : "기타")}
         >
           <input
             type="radio"
             name={name}
             checked={value === "기타"}
-            onChange={() => onChange("기타")}
+            onChange={() => onChange(value === "기타" ? "" : "기타")}
             className={`w-[18px] h-[18px] mr-3 shrink-0 ${
               value === "기타" ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
             }`}
