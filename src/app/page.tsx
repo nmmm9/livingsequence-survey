@@ -428,14 +428,14 @@ function RadioGroup({
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
                       }`}
-          onClick={() => onChange(value === opt ? "" : opt)}
+          onClick={(e) => { e.preventDefault(); onChange(value === opt ? "" : opt); }}
         >
           <input
             type="radio"
             name={name}
             checked={value === opt}
-            onChange={() => onChange(value === opt ? "" : opt)}
-            className={`w-[18px] h-[18px] mr-3 shrink-0 ${
+            readOnly
+            className={`w-[18px] h-[18px] mr-3 shrink-0 pointer-events-none ${
               value === opt ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
             }`}
           />
@@ -450,14 +450,14 @@ function RadioGroup({
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
                       }`}
-          onClick={() => onChange(value === "기타" ? "" : "기타")}
+          onClick={(e) => { e.preventDefault(); onChange(value === "기타" ? "" : "기타"); }}
         >
           <input
             type="radio"
             name={name}
             checked={value === "기타"}
-            onChange={() => onChange(value === "기타" ? "" : "기타")}
-            className={`w-[18px] h-[18px] mr-3 shrink-0 ${
+            readOnly
+            className={`w-[18px] h-[18px] mr-3 shrink-0 pointer-events-none ${
               value === "기타" ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
             }`}
           />
