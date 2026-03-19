@@ -70,25 +70,15 @@ export default function SurveyPage() {
 
   const progress = useCallback(() => {
     let answered = 0;
-    const total = 17;
-    if (form.q1) answered++;
     if (form.q2.value) answered++;
-    if (form.q3) answered++;
-    if (form.q4) answered++;
-    if (form.q5) answered++;
-    if (form.q6) answered++;
     if (form.q7.value) answered++;
-    if (form.q8) answered++;
     if (form.q9.value) answered++;
     if (form.q10.value) answered++;
     if (form.q11.values.length > 0) answered++;
     if (form.q12.values.length > 0) answered++;
     if (form.q13.values.length > 0) answered++;
-    if (form.q14) answered++;
     if (form.q15.values.length > 0) answered++;
-    if (form.q16) answered++;
-    if (form.q17) answered++;
-    return Math.round((answered / total) * 100);
+    return Math.round((answered / 8) * 100);
   }, [form]);
 
   const handleSubmit = async () => {
@@ -144,9 +134,9 @@ export default function SurveyPage() {
 
       {/* Progress */}
       <div className="sticky top-0 z-50 bg-[var(--bg)]">
-        <div className="h-0.5 bg-[var(--border)]">
+        <div className="h-1 bg-[var(--border)]">
           <div
-            className="h-full bg-[var(--teal)] transition-all duration-400 ease-out"
+            className="h-full bg-[var(--dark)] transition-all duration-400 ease-out"
             style={{ width: `${progress()}%` }}
           />
         </div>
