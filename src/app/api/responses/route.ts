@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "livingseq2026";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "1234";
 
 export async function GET(request: NextRequest) {
   const password = request.headers.get("x-admin-password");
