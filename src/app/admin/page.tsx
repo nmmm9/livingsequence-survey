@@ -9,25 +9,25 @@ interface SurveyRow {
   created_at: string;
 }
 
-const QUESTIONS: Record<string, string> = {
-  q1: "01. 리빙시퀀스의 첫인상",
-  q2: "02. 고객이 인테리어 업체 선택 시 가장 중요한 기준",
-  q3: "03. 계약이 무산된 가장 흔한 이유",
-  q4: "04. 시공 후 고객 불만 시 어려웠던 점",
-  q5: "05. 인테리어 시장에서 가장 시급히 바뀌어야 할 것",
-  q6: "06. 대표님의 가장 큰 업무 고민 (선택)",
-  q7: "07. 취향Kit으로 초기 상담 시간 단축 여부",
-  q8: "08. 취향Kit에 있으면 좋겠는 고객 정보",
-  q9: "09. 매칭 추천 리스트의 계약 전환 도움 여부",
-  q10: "10. 브랜드 프로필 제작 관심 여부",
-  q11: "11. 가장 매력적인 솔루션 (복수)",
-  q12: "12. 실효성 낮은 솔루션",
-  q13: "13. 가장 개선 기대 업무 (복수)",
-  q14: "14. 부족한 기능/서비스",
-  q15: "15. 가장 우려되는 점 (복수)",
-  q16: "16. 가장 불안한 시나리오",
-  q17: "17. 추가 의견/제안",
-};
+const QUESTIONS: { key: string; label: string; type: "text" | "radio" | "checkbox" }[] = [
+  { key: "q1", label: "리빙시퀀스의 첫인상", type: "text" },
+  { key: "q2", label: "고객이 인테리어 업체 선택 시 가장 중요한 기준", type: "radio" },
+  { key: "q3", label: "계약이 무산된 가장 흔한 이유", type: "text" },
+  { key: "q4", label: "시공 후 고객 불만 시 어려웠던 점", type: "text" },
+  { key: "q5", label: "인테리어 시장에서 가장 시급히 바뀌어야 할 것", type: "text" },
+  { key: "q6", label: "대표님의 가장 큰 업무 고민", type: "text" },
+  { key: "q7", label: "취향Kit으로 초기 상담 시간 단축 여부", type: "radio" },
+  { key: "q8", label: "취향Kit에 있으면 좋겠는 고객 정보", type: "text" },
+  { key: "q9", label: "매칭 추천 리스트의 계약 전환 도움 여부", type: "radio" },
+  { key: "q10", label: "브랜드 프로필 제작 관심 여부", type: "radio" },
+  { key: "q11", label: "가장 매력적인 솔루션", type: "checkbox" },
+  { key: "q12", label: "실효성 낮은 솔루션", type: "checkbox" },
+  { key: "q13", label: "가장 개선 기대 업무", type: "checkbox" },
+  { key: "q14", label: "부족한 기능/서비스", type: "text" },
+  { key: "q15", label: "가장 우려되는 점", type: "checkbox" },
+  { key: "q16", label: "가장 불안한 시나리오", type: "text" },
+  { key: "q17", label: "추가 의견/제안", type: "text" },
+];
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -35,7 +35,9 @@ export default function AdminPage() {
   const [data, setData] = useState<SurveyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [view, setView] = useState<"list" | "detail" | "question">("list");
   const [selected, setSelected] = useState<SurveyRow | null>(null);
+  const [selectedQ, setSelectedQ] = useState<string | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -60,13 +62,14 @@ export default function AdminPage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen bg-[#111] flex items-center justify-center">
-        <div className="bg-white rounded-2xl p-8 w-[340px]">
-          <h1 className="text-lg font-semibold mb-1">관리자 로그인</h1>
+      <div className="min-h-screen bg-[#111] flex items-center justify-center px-5">
+        <div className="bg-white rounded-2xl p-8 w-full max-w-[360px]">
+          <div className="font-figtree text-[10px] font-semibold tracking-[4px] uppercase text-[#ccc] mb-4">Living Sequence</div>
+          <h1 className="text-xl font-semibold mb-1">관리자</h1>
           <p className="text-sm text-[#999] mb-6">응답을 확인하려면 비밀번호를 입력하세요.</p>
           <input
             type="password"
-            className="w-full px-4 py-3 border border-[#eee] rounded-xl text-sm outline-none focus:border-[#333] transition-colors mb-3"
+            className="w-full px-4 py-3.5 border border-[#eee] rounded-xl text-sm outline-none focus:border-[#333] transition-colors mb-3"
             placeholder="비밀번호"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -76,8 +79,7 @@ export default function AdminPage() {
           <button
             onClick={fetchData}
             disabled={loading || !password}
-            className="w-full py-3 bg-[#111] text-white rounded-xl text-sm font-medium
-                       hover:bg-[#333] transition-colors disabled:opacity-40"
+            className="w-full py-3.5 bg-[#111] text-white rounded-xl text-sm font-medium hover:bg-[#333] transition-colors disabled:opacity-40"
           >
             {loading ? "확인 중..." : "로그인"}
           </button>
@@ -86,97 +88,266 @@ export default function AdminPage() {
     );
   }
 
+  const avgTime = data.length > 0
+    ? Math.round(data.reduce((sum, r) => sum + ((r.metadata?.completionTimeSeconds as number) || 0), 0) / data.length)
+    : 0;
+
   return (
-    <div className="min-h-screen bg-[#f7f7f7]">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
-      <header className="bg-[#111] text-white px-6 py-5 flex items-center justify-between">
-        <div>
-          <div className="font-figtree text-[10px] font-semibold tracking-[4px] uppercase text-white/40">
-            Living Sequence
+      <header className="bg-[#111] border-b border-white/5">
+        <div className="max-w-[1200px] mx-auto px-5 py-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-figtree text-[10px] font-semibold tracking-[4px] uppercase text-white/30">Living Sequence</div>
+              <h1 className="font-figtree text-xl font-light text-white mt-1">Survey Dashboard</h1>
+            </div>
+            <button onClick={fetchData} className="px-4 py-2 bg-white/10 rounded-lg text-xs text-white/70 hover:bg-white/20 transition-colors">
+              새로고침
+            </button>
           </div>
-          <h1 className="font-figtree text-lg font-light mt-1">Survey Responses</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-white/60">총 {data.length}건</span>
-          <button
-            onClick={fetchData}
-            className="px-4 py-2 bg-white/10 rounded-lg text-xs hover:bg-white/20 transition-colors"
-          >
-            새로고침
-          </button>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 mt-5">
+            <div className="bg-white/5 rounded-xl px-4 py-3">
+              <div className="text-2xl font-semibold text-white font-figtree">{data.length}</div>
+              <div className="text-[11px] text-white/40 mt-0.5">총 응답</div>
+            </div>
+            <div className="bg-white/5 rounded-xl px-4 py-3">
+              <div className="text-2xl font-semibold text-white font-figtree">{avgTime ? `${Math.floor(avgTime / 60)}분` : "-"}</div>
+              <div className="text-[11px] text-white/40 mt-0.5">평균 소요시간</div>
+            </div>
+            <div className="bg-white/5 rounded-xl px-4 py-3">
+              <div className="text-2xl font-semibold text-white font-figtree">
+                {data.length > 0 ? new Date(data[0].created_at).toLocaleDateString("ko-KR", { month: "short", day: "numeric" }) : "-"}
+              </div>
+              <div className="text-[11px] text-white/40 mt-0.5">최근 응답</div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-1 mt-5 bg-white/5 rounded-xl p-1">
+            <button
+              onClick={() => { setView("list"); setSelected(null); setSelectedQ(null); }}
+              className={`flex-1 py-2.5 rounded-lg text-xs font-medium transition-colors ${view === "list" || view === "detail" ? "bg-white text-[#111]" : "text-white/50 hover:text-white/80"}`}
+            >
+              응답자별
+            </button>
+            <button
+              onClick={() => { setView("question"); setSelected(null); setSelectedQ(null); }}
+              className={`flex-1 py-2.5 rounded-lg text-xs font-medium transition-colors ${view === "question" ? "bg-white text-[#111]" : "text-white/50 hover:text-white/80"}`}
+            >
+              질문별
+            </button>
+          </div>
         </div>
       </header>
 
       <div className="max-w-[1200px] mx-auto p-4">
-        {/* Response List */}
-        {!selected ? (
+
+        {/* ── 응답자별: 목록 ── */}
+        {view === "list" && (
           <div className="grid gap-3">
             {data.map((row, i) => (
               <button
                 key={row.id}
-                onClick={() => setSelected(row)}
-                className="bg-white rounded-2xl p-5 text-left hover:shadow-md transition-shadow w-full"
+                onClick={() => { setSelected(row); setView("detail"); }}
+                className="bg-[#181818] rounded-2xl p-5 text-left hover:bg-[#222] transition-colors w-full border border-white/5"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-figtree text-xs font-bold text-[#999]">
-                    #{data.length - i}
-                  </span>
-                  <span className="text-xs text-[#999]">
-                    {new Date(row.created_at).toLocaleString("ko-KR")}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center font-figtree text-xs font-bold text-white/60">
+                      {data.length - i}
+                    </span>
+                    <span className="text-xs text-white/30">
+                      {new Date(row.created_at).toLocaleString("ko-KR")}
+                    </span>
+                  </div>
+                  {row.metadata?.completionTimeSeconds ? (
+                    <span className="text-[11px] text-white/20">{formatTime(row.metadata.completionTimeSeconds as number)}</span>
+                  ) : null}
                 </div>
-                <p className="text-sm text-[#333] line-clamp-2">
+                <p className="text-sm text-white/80 line-clamp-2 mb-3">
                   {formatPreview(row.responses.q1)}
                 </p>
-                <div className="mt-3 flex gap-2 flex-wrap">
+                <div className="flex gap-1.5 flex-wrap">
                   {formatTags(row.responses)}
                 </div>
               </button>
             ))}
             {data.length === 0 && (
-              <div className="text-center py-20 text-[#999] text-sm">
-                아직 응답이 없습니다.
-              </div>
+              <div className="text-center py-20 text-white/30 text-sm">아직 응답이 없습니다.</div>
             )}
           </div>
-        ) : (
-          /* Detail View */
+        )}
+
+        {/* ── 응답자별: 상세 ── */}
+        {view === "detail" && selected && (
           <div>
             <button
-              onClick={() => setSelected(null)}
-              className="mb-4 px-4 py-2 bg-white rounded-xl text-sm text-[#333] hover:bg-[#eee] transition-colors"
+              onClick={() => { setView("list"); setSelected(null); }}
+              className="mb-4 px-4 py-2 bg-[#181818] rounded-xl text-sm text-white/60 hover:bg-[#222] transition-colors border border-white/5"
             >
               ← 목록으로
             </button>
-            <div className="bg-white rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#eee]">
-                <h2 className="text-base font-semibold">응답 상세</h2>
-                <span className="text-xs text-[#999]">
-                  {new Date(selected.created_at).toLocaleString("ko-KR")}
-                </span>
+            <div className="bg-[#181818] rounded-2xl border border-white/5 overflow-hidden">
+              <div className="px-6 py-5 border-b border-white/5 flex items-center justify-between">
+                <h2 className="text-base font-semibold text-white">응답 상세</h2>
+                <div className="flex items-center gap-3">
+                  {selected.metadata?.completionTimeSeconds ? (
+                    <span className="text-xs text-white/30">소요 {formatTime(selected.metadata.completionTimeSeconds as number)}</span>
+                  ) : null}
+                  <span className="text-xs text-white/30">
+                    {new Date(selected.created_at).toLocaleString("ko-KR")}
+                  </span>
+                </div>
               </div>
-              <div className="space-y-6">
-                {Object.entries(QUESTIONS).map(([key, label]) => {
+              <div className="divide-y divide-white/5">
+                {QUESTIONS.map(({ key, label }) => {
                   const answer = selected.responses[key];
                   if (answer === null || answer === undefined || answer === "") return null;
                   return (
-                    <div key={key}>
-                      <div className="text-xs font-medium text-[#999] mb-1.5">{label}</div>
-                      <div className="text-sm text-[#111] leading-relaxed">
+                    <div key={key} className="px-6 py-5">
+                      <div className="text-[11px] font-medium text-white/30 mb-2 uppercase tracking-wider font-figtree">Q{key.slice(1)}. {label}</div>
+                      <div className="text-sm text-white/80 leading-relaxed">
                         {renderAnswer(key, answer)}
                       </div>
                     </div>
                   );
                 })}
               </div>
-              {selected.metadata && Object.keys(selected.metadata).length > 0 && (
-                <div className="mt-6 pt-4 border-t border-[#eee]">
-                  <div className="text-xs text-[#999]">
-                    소요시간: {formatTime(selected.metadata.completionTimeSeconds as number)}
+            </div>
+          </div>
+        )}
+
+        {/* ── 질문별 ── */}
+        {view === "question" && !selectedQ && (
+          <div className="grid gap-3">
+            {QUESTIONS.map(({ key, label, type }) => {
+              const count = data.filter((r) => {
+                const a = r.responses[key];
+                if (!a) return false;
+                if (typeof a === "string") return a.length > 0;
+                if (typeof a === "object" && "value" in (a as Record<string, unknown>)) return !!(a as Record<string, unknown>).value;
+                if (typeof a === "object" && "values" in (a as Record<string, unknown>)) return ((a as Record<string, unknown>).values as string[]).length > 0;
+                return false;
+              }).length;
+              const rate = data.length > 0 ? Math.round((count / data.length) * 100) : 0;
+
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedQ(key)}
+                  className="bg-[#181818] rounded-2xl p-5 text-left hover:bg-[#222] transition-colors w-full border border-white/5"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-figtree text-xs font-bold text-white/30">Q{key.slice(1)}</span>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full ${
+                      type === "text" ? "bg-blue-500/10 text-blue-400" : type === "radio" ? "bg-green-500/10 text-green-400" : "bg-purple-500/10 text-purple-400"
+                    }`}>
+                      {type === "text" ? "주관식" : type === "radio" ? "단일선택" : "복수선택"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-white/80 mb-3">{label}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-white/30 rounded-full transition-all" style={{ width: `${rate}%` }} />
+                    </div>
+                    <span className="text-xs text-white/40 font-figtree">{count}/{data.length}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── 질문별: 상세 ── */}
+        {view === "question" && selectedQ && (
+          <div>
+            <button
+              onClick={() => setSelectedQ(null)}
+              className="mb-4 px-4 py-2 bg-[#181818] rounded-xl text-sm text-white/60 hover:bg-[#222] transition-colors border border-white/5"
+            >
+              ← 질문 목록으로
+            </button>
+
+            {(() => {
+              const q = QUESTIONS.find((q) => q.key === selectedQ)!;
+              const answers = data
+                .map((r) => ({ answer: r.responses[selectedQ], time: r.created_at }))
+                .filter((a) => {
+                  if (!a.answer) return false;
+                  if (typeof a.answer === "string") return a.answer.length > 0;
+                  return true;
+                });
+
+              // Aggregate stats for radio/checkbox
+              const valueCounts: Record<string, number> = {};
+              if (q.type === "radio") {
+                answers.forEach(({ answer }) => {
+                  const val = (answer as Record<string, unknown>).value as string;
+                  if (val) valueCounts[val] = (valueCounts[val] || 0) + 1;
+                });
+              } else if (q.type === "checkbox") {
+                answers.forEach(({ answer }) => {
+                  const vals = (answer as Record<string, unknown>).values as string[];
+                  vals?.forEach((v) => { valueCounts[v] = (valueCounts[v] || 0) + 1; });
+                });
+              }
+              const sortedCounts = Object.entries(valueCounts).sort((a, b) => b[1] - a[1]);
+              const maxCount = sortedCounts.length > 0 ? sortedCounts[0][1] : 1;
+
+              return (
+                <div className="bg-[#181818] rounded-2xl border border-white/5 overflow-hidden">
+                  <div className="px-6 py-5 border-b border-white/5">
+                    <div className="text-[11px] font-medium text-white/30 mb-1 uppercase tracking-wider font-figtree">Q{selectedQ.slice(1)}</div>
+                    <h2 className="text-base font-semibold text-white">{q.label}</h2>
+                    <div className="text-xs text-white/30 mt-1">{answers.length}명 응답</div>
+                  </div>
+
+                  {/* Bar chart for radio/checkbox */}
+                  {(q.type === "radio" || q.type === "checkbox") && sortedCounts.length > 0 && (
+                    <div className="px-6 py-5 border-b border-white/5">
+                      <div className="space-y-3">
+                        {sortedCounts.map(([label, count]) => (
+                          <div key={label}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm text-white/70">{label}</span>
+                              <span className="text-xs text-white/40 font-figtree">{count}명 ({data.length > 0 ? Math.round((count / data.length) * 100) : 0}%)</span>
+                            </div>
+                            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-white/25 rounded-full transition-all"
+                                style={{ width: `${(count / maxCount) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Individual answers */}
+                  <div className="divide-y divide-white/5">
+                    {answers.map(({ answer, time }, i) => (
+                      <div key={i} className="px-6 py-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center font-figtree text-[11px] font-bold text-white/40">
+                            {answers.length - i}
+                          </span>
+                          <span className="text-[11px] text-white/20">
+                            {new Date(time).toLocaleString("ko-KR")}
+                          </span>
+                        </div>
+                        <div className="text-sm text-white/70 leading-relaxed">
+                          {renderAnswer(selectedQ, answer)}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              )}
-            </div>
+              );
+            })()}
           </div>
         )}
       </div>
@@ -185,7 +356,7 @@ export default function AdminPage() {
 }
 
 function formatPreview(val: unknown): string {
-  if (typeof val === "string") return val;
+  if (typeof val === "string") return val || "응답 없음";
   return "응답 있음";
 }
 
@@ -194,13 +365,11 @@ function formatTags(responses: Record<string, unknown>) {
   const q2 = responses.q2 as { value?: string } | undefined;
   if (q2?.value) tags.push(q2.value);
   const q7 = responses.q7 as { value?: string } | undefined;
-  if (q7?.value) tags.push(`상담시간: ${q7.value}`);
+  if (q7?.value) tags.push(q7.value);
   const q10 = responses.q10 as { value?: string } | undefined;
-  if (q10?.value) tags.push(`프로필: ${q10.value}`);
+  if (q10?.value) tags.push(q10.value);
   return tags.slice(0, 3).map((t) => (
-    <span key={t} className="px-2.5 py-1 bg-[#f7f7f7] rounded-lg text-[11px] text-[#666]">
-      {t}
-    </span>
+    <span key={t} className="px-2 py-0.5 bg-white/5 rounded-md text-[11px] text-white/40">{t}</span>
   ));
 }
 
@@ -210,25 +379,18 @@ function renderAnswer(key: string, answer: unknown): React.ReactNode {
   if (typeof answer === "object" && answer !== null) {
     const obj = answer as Record<string, unknown>;
 
-    // Radio with other
     if ("value" in obj && !("values" in obj)) {
-      const parts: string[] = [];
-      parts.push(obj.value as string);
-      if (obj.other) parts.push(`(기타: ${obj.other})`);
-
-      // Sub-questions
-      const subKeys = Object.keys(obj).filter((k) => k.startsWith(key + "_") || k.startsWith("q"));
-      const subs = subKeys.filter((k) => k !== "value" && k !== "other");
+      const subs = Object.keys(obj).filter((k) => k !== "value" && k !== "other" && (k.startsWith(key + "_") || k.startsWith("q")));
       return (
         <div>
-          <p>{parts.join(" ")}</p>
+          <p>{String(obj.value)}{obj.other ? ` (기타: ${String(obj.other)})` : ""}</p>
           {subs.map((sk) => {
             const sub = obj[sk];
             if (!sub) return null;
-            if (typeof sub === "string") return <p key={sk} className="mt-1 pl-3 border-l-2 border-[#eee] text-[#666]">{sub}</p>;
+            if (typeof sub === "string") return <p key={sk} className="mt-1.5 pl-3 border-l-2 border-white/10 text-white/50">{sub}</p>;
             const subObj = sub as Record<string, unknown>;
             return (
-              <p key={sk} className="mt-1 pl-3 border-l-2 border-[#eee] text-[#666]">
+              <p key={sk} className="mt-1.5 pl-3 border-l-2 border-white/10 text-white/50">
                 → {String(subObj.value)}{subObj.other ? ` (${String(subObj.other)})` : ""}
               </p>
             );
@@ -237,25 +399,23 @@ function renderAnswer(key: string, answer: unknown): React.ReactNode {
       );
     }
 
-    // Checkbox
     if ("values" in obj) {
       const vals = obj.values as string[];
       return (
         <div>
           <div className="flex gap-1.5 flex-wrap">
             {vals.map((v) => (
-              <span key={v} className="px-2.5 py-1 bg-[#f7f7f7] rounded-lg text-[12px]">{v}</span>
+              <span key={v} className="px-2.5 py-1 bg-white/5 rounded-lg text-[12px] text-white/60">{v}</span>
             ))}
           </div>
-          {obj.other ? <p className="mt-1 text-[#666]">기타: {String(obj.other)}</p> : null}
-          {obj.reason ? <p className="mt-1 pl-3 border-l-2 border-[#eee] text-[#666]">{String(obj.reason)}</p> : null}
-          {/* Sub-questions for checkbox (e.g., q15_1) */}
+          {obj.other ? <p className="mt-1.5 text-white/50">기타: {String(obj.other)}</p> : null}
+          {obj.reason ? <p className="mt-1.5 pl-3 border-l-2 border-white/10 text-white/50">{String(obj.reason)}</p> : null}
           {Object.keys(obj).filter((k) => k.startsWith("q")).map((sk) => {
             const sub = obj[sk];
             if (!sub) return null;
             const subObj = sub as Record<string, unknown>;
             return (
-              <p key={sk} className="mt-1 pl-3 border-l-2 border-[#eee] text-[#666]">
+              <p key={sk} className="mt-1.5 pl-3 border-l-2 border-white/10 text-white/50">
                 → {String(subObj.value)}{subObj.other ? ` (${String(subObj.other)})` : ""}
               </p>
             );
