@@ -429,8 +429,8 @@ function RadioGroup({
       {options.map((opt) => (
         <label
           key={opt}
-          className={`flex items-center flex-wrap px-[18px] py-[15px] rounded-[14px] text-sm cursor-pointer
-                      transition-all active:scale-[0.98] min-h-[50px] whitespace-nowrap border-[1.5px]
+          className={`flex items-center px-[18px] py-[15px] rounded-[14px] text-sm cursor-pointer
+                      transition-all active:scale-[0.98] min-h-[50px] border-[1.5px]
                       ${value === opt
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
@@ -517,8 +517,8 @@ function CheckboxGroup({
       {options.map((opt) => (
         <label
           key={opt}
-          className={`flex items-center flex-wrap px-[18px] py-[15px] rounded-[14px] text-sm cursor-pointer
-                      transition-all active:scale-[0.98] min-h-[50px] whitespace-nowrap border-[1.5px]
+          className={`flex items-center px-[18px] py-[15px] rounded-[14px] text-sm cursor-pointer
+                      transition-all active:scale-[0.98] min-h-[50px] border-[1.5px]
                       ${values.includes(opt)
                         ? "bg-[var(--dark)] text-white border-[var(--dark)]"
                         : "bg-[var(--bg)] text-[var(--teal)] border-transparent"
