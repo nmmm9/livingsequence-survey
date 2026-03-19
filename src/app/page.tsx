@@ -478,6 +478,7 @@ function RadioGroup({
                         }`}
             placeholder="직접 입력"
             value={otherValue ?? ""}
+            onClick={(e) => e.stopPropagation()}
             onFocus={() => { if (value !== "기타") onChange("기타"); }}
             onChange={(e) => onOtherChange?.(e.target.value)}
           />
