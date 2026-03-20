@@ -518,10 +518,10 @@ function CheckboxGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); toggle(opt); }}
         >
-          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-md border-2 flex items-center justify-center transition-all ${
-            values.includes(opt) ? "border-white bg-white" : "border-[#ccc]"
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+            values.includes(opt) ? "border-white" : "border-[#ccc]"
           }`}>
-            {values.includes(opt) && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            {values.includes(opt) && <span className="w-[10px] h-[10px] rounded-full bg-white" />}
           </span>
           {opt}
         </label>
@@ -536,10 +536,10 @@ function CheckboxGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); toggle("기타"); }}
         >
-          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-md border-2 flex items-center justify-center transition-all ${
-            values.includes("기타") ? "border-white bg-white" : "border-[#ccc]"
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+            values.includes("기타") ? "border-white" : "border-[#ccc]"
           }`}>
-            {values.includes("기타") && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+            {values.includes("기타") && <span className="w-[10px] h-[10px] rounded-full bg-white" />}
           </span>
           기타
           <input
