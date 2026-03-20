@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 type RadioAnswer = { value: string; other?: string };
@@ -56,6 +56,13 @@ export default function SurveyPage() {
     qId: "",
   });
   const startTime = useRef(Date.now());
+
+  useEffect(() => {
+    if (!submitting) return;
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [submitting]);
 
   const REQUIRED_FIELDS: { key: string; label: string; check: () => boolean }[] = [
     { key: "q2", label: "2번 문항에 답변해주세요.", check: () => !!form.q2.value },
@@ -306,6 +313,17 @@ export default function SurveyPage() {
           LIVING SEQUENCE
         </div>
       </footer>
+
+      {/* Submitting overlay */}
+      {submitting && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-2xl px-8 py-6 text-center">
+            <div className="w-6 h-6 border-2 border-[#111] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-sm font-medium text-[#111]">제출 중입니다...</p>
+            <p className="text-xs text-[#999] mt-1">잠시만 기다려주세요</p>
+          </div>
+        </div>
+      )}
 
       {/* Modal */}
       {modal.show && (
