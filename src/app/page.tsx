@@ -59,10 +59,15 @@ export default function SurveyPage() {
 
   const REQUIRED_FIELDS: { key: string; label: string; check: () => boolean }[] = [
     { key: "q2", label: "02. 고객이 인테리어 업체 선택 시 기준", check: () => !!form.q2.value },
+    { key: "q2", label: "02. 기타 항목을 입력해주세요", check: () => form.q2.value !== "기타" || !!form.q2.other?.trim() },
     { key: "q7", label: "07. 취향Kit 상담 시간 단축 여부", check: () => !!form.q7.value },
     { key: "q7", label: "07-1. 시간이 줄어들 부분", check: () => {
       const pos = form.q7.value === "매우 그렇다" || form.q7.value === "그렇다";
       return !pos || !!form.q7.q7_1?.value;
+    }},
+    { key: "q7", label: "07-1. 기타 항목을 입력해주세요", check: () => {
+      const pos = form.q7.value === "매우 그렇다" || form.q7.value === "그렇다";
+      return !pos || form.q7.q7_1?.value !== "기타" || !!form.q7.q7_1?.other?.trim();
     }},
     { key: "q7", label: "07-2. 줄지 않는 이유", check: () => {
       const neg = form.q7.value === "아니다" || form.q7.value === "전혀 아니다";
@@ -73,24 +78,41 @@ export default function SurveyPage() {
       const pos = form.q9.value === "매우 그렇다" || form.q9.value === "그렇다";
       return !pos || !!form.q9.q9_1?.value;
     }},
+    { key: "q9", label: "09-1. 기타 항목을 입력해주세요", check: () => {
+      const pos = form.q9.value === "매우 그렇다" || form.q9.value === "그렇다";
+      return !pos || form.q9.q9_1?.value !== "기타" || !!form.q9.q9_1?.other?.trim();
+    }},
     { key: "q9", label: "09-2. 도움이 안 될 이유", check: () => {
       const neg = form.q9.value === "아니다" || form.q9.value === "전혀 아니다";
       return !neg || !!form.q9.q9_2?.value;
+    }},
+    { key: "q9", label: "09-2. 기타 항목을 입력해주세요", check: () => {
+      const neg = form.q9.value === "아니다" || form.q9.value === "전혀 아니다";
+      return !neg || form.q9.q9_2?.value !== "기타" || !!form.q9.q9_2?.other?.trim();
     }},
     { key: "q10", label: "10. 브랜드 프로필 제작 관심 여부", check: () => !!form.q10.value },
     { key: "q10", label: "10-2. 관심 없는 이유", check: () => {
       return form.q10.value !== "관심 없다" || !!form.q10.q10_2?.value;
     }},
+    { key: "q10", label: "10-2. 기타 항목을 입력해주세요", check: () => {
+      return form.q10.value !== "관심 없다" || form.q10.q10_2?.value !== "기타" || !!form.q10.q10_2?.other?.trim();
+    }},
     { key: "q11", label: "11. 가장 매력적인 솔루션", check: () => form.q11.values.length > 0 },
+    { key: "q11", label: "11. 기타 항목을 입력해주세요", check: () => !form.q11.values.includes("기타") || !!form.q11.other?.trim() },
     { key: "q12", label: "12. 실효성 낮은 솔루션", check: () => form.q12.values.length > 0 },
     { key: "q12", label: "12-1. 실효성 낮은 이유", check: () => {
       const hasNonNone = form.q12.values.length > 0 && !form.q12.values.every((v) => v === "없다");
       return !hasNonNone || !!form.q12.reason;
     }},
     { key: "q13", label: "13. 가장 개선 기대 업무", check: () => form.q13.values.length > 0 },
+    { key: "q13", label: "13. 기타 항목을 입력해주세요", check: () => !form.q13.values.includes("기타") || !!form.q13.other?.trim() },
     { key: "q15", label: "15. 가장 우려되는 점", check: () => form.q15.values.length > 0 },
+    { key: "q15", label: "15. 기타 항목을 입력해주세요", check: () => !form.q15.values.includes("기타") || !!form.q15.other?.trim() },
     { key: "q15", label: "15-1. 신뢰가 생기는 고객 유입 수준", check: () => {
       return !form.q15.values.includes("실제 고객이 유입될지 불확실") || !!form.q15.q15_1?.value;
+    }},
+    { key: "q15", label: "15-1. 기타 항목을 입력해주세요", check: () => {
+      return !form.q15.values.includes("실제 고객이 유입될지 불확실") || form.q15.q15_1?.value !== "기타" || !!form.q15.q15_1?.other?.trim();
     }},
   ];
 
