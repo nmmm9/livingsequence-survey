@@ -154,7 +154,7 @@ export default function SurveyPage() {
       });
 
       if (res.ok) {
-        router.push("/thank-you");
+        router.replace("/thank-you");
       } else {
         alert("제출에 실패했습니다. 다시 시도해주세요.");
       }
