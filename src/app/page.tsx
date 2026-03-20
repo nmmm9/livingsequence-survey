@@ -437,15 +437,11 @@ function RadioGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); onChange(value === opt ? "" : opt); }}
         >
-          <input
-            type="radio"
-            name={name}
-            checked={value === opt}
-            readOnly
-            className={`w-[18px] h-[18px] mr-3 shrink-0 pointer-events-none ${
-              value === opt ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
-            }`}
-          />
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+            value === opt ? "border-white" : "border-[#ccc]"
+          }`}>
+            {value === opt && <span className="w-[10px] h-[10px] rounded-full bg-white" />}
+          </span>
           {opt}
         </label>
       ))}
@@ -459,15 +455,11 @@ function RadioGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); onChange(value === "기타" ? "" : "기타"); }}
         >
-          <input
-            type="radio"
-            name={name}
-            checked={value === "기타"}
-            readOnly
-            className={`w-[18px] h-[18px] mr-3 shrink-0 pointer-events-none ${
-              value === "기타" ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
-            }`}
-          />
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+            value === "기타" ? "border-white" : "border-[#ccc]"
+          }`}>
+            {value === "기타" && <span className="w-[10px] h-[10px] rounded-full bg-white" />}
+          </span>
           기타
           <input
             type="text"
@@ -526,15 +518,11 @@ function CheckboxGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); toggle(opt); }}
         >
-          <input
-            type="checkbox"
-            name={name}
-            checked={values.includes(opt)}
-            onChange={() => toggle(opt)}
-            className={`w-[18px] h-[18px] mr-3 shrink-0 ${
-              values.includes(opt) ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
-            }`}
-          />
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-md border-2 flex items-center justify-center transition-all ${
+            values.includes(opt) ? "border-white bg-white" : "border-[#ccc]"
+          }`}>
+            {values.includes(opt) && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+          </span>
           {opt}
         </label>
       ))}
@@ -548,15 +536,11 @@ function CheckboxGroup({
                       }`}
           onClick={(e) => { e.preventDefault(); toggle("기타"); }}
         >
-          <input
-            type="checkbox"
-            name={name}
-            checked={values.includes("기타")}
-            onChange={() => toggle("기타")}
-            className={`w-[18px] h-[18px] mr-3 shrink-0 ${
-              values.includes("기타") ? "accent-white opacity-100" : "accent-[var(--teal)] opacity-40"
-            }`}
-          />
+          <span className={`w-[20px] h-[20px] mr-3 shrink-0 rounded-md border-2 flex items-center justify-center transition-all ${
+            values.includes("기타") ? "border-white bg-white" : "border-[#ccc]"
+          }`}>
+            {values.includes("기타") && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+          </span>
           기타
           <input
             type="text"
