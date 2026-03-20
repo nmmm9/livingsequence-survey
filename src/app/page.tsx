@@ -182,7 +182,7 @@ export default function SurveyPage() {
 
 
       {/* All Questions */}
-      <div className="bg-[var(--card)] mx-3 rounded-b-[20px] px-6 py-9">
+      <div className="bg-[var(--card)] mx-3 mt-3 rounded-[20px] px-6 py-9">
 
         <QuestionTextarea num="01" label="오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요." optional value={form.q1} onChange={(v) => setForm({ ...form, q1: v })} />
         <Divider />
