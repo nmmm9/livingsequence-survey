@@ -65,6 +65,7 @@ export default function SurveyPage() {
   }, [submitting]);
 
   const REQUIRED_FIELDS: { key: string; label: string; check: () => boolean }[] = [
+    { key: "q1", label: "1번 문항에 답변해주세요.", check: () => !!form.q1.trim() },
     { key: "q2", label: "2번 문항에 답변해주세요.", check: () => !!form.q2.value },
     { key: "q2", label: "2번 기타를 선택하셨다면 내용을 적어주세요.", check: () => form.q2.value !== "기타" || !!form.q2.other?.trim() },
     { key: "q7", label: "7번 문항에 답변해주세요.", check: () => !!form.q7.value },
@@ -191,7 +192,7 @@ export default function SurveyPage() {
       {/* All Questions */}
       <div className="bg-[var(--card)] mx-3 mt-3 rounded-[20px] px-6 py-9">
 
-        <QuestionTextarea num="01" label="오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요." optional value={form.q1} onChange={(v) => setForm({ ...form, q1: v })} />
+        <QuestionTextarea id="q1" num="01" label="오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요." value={form.q1} onChange={(v) => setForm({ ...form, q1: v })} />
         <Divider />
         <QuestionRadio id="q2" num="02" label="대표님이 생각하시기에, 고객이 인테리어 업체를 선택할 때 가장 중요하게 보는 기준은 무엇입니까?" options={["가격/견적", "시공 사례/포트폴리오", "지인 추천/입소문", "디자인 감각/스타일 적합성", "소통/응대 속도"]} hasOther value={form.q2} onChange={(v) => setForm({ ...form, q2: v })} />
         <Divider />
@@ -391,12 +392,14 @@ function Question({
 }
 
 function QuestionTextarea({
+  id,
   num,
   label,
   optional,
   value,
   onChange,
 }: {
+  id?: string;
   num: string;
   label: string;
   optional?: boolean;
@@ -404,7 +407,7 @@ function QuestionTextarea({
   onChange: (v: string) => void;
 }) {
   return (
-    <Question num={num} label={label} optional={optional ? "선택" : undefined}>
+    <Question id={id} num={num} label={label} optional={optional ? "선택" : undefined}>
       <textarea
         className="survey-textarea"
         placeholder="자유롭게 적어주세요"
