@@ -196,7 +196,7 @@ export default function SurveyPage() {
         <Divider />
         <QuestionTextarea num="05" label="현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?" optional value={form.q5} onChange={(v) => setForm({ ...form, q5: v })} />
         <Divider />
-        <QuestionTextarea num="06" label="플랫폼이 아닌, 대표님이 직접 해결하고 싶은 업무상 가장 큰 고민은?" optional value={form.q6} onChange={(v) => setForm({ ...form, q6: v })} />
+        <QuestionTextarea num="06" label="현재 업무 진행 시 사용하는 툴(엑셀, 노션 등)에서 가장 불편한 점은?" optional value={form.q6} onChange={(v) => setForm({ ...form, q6: v })} />
         <Divider />
 
         <Question id="q7" num="07" label="취향Kit을 통해 고객 정보, 스타일이 사전에 정리되어 전달된다면, 초기 상담 시간이 줄어들 것 같습니까?">
@@ -232,11 +232,11 @@ export default function SurveyPage() {
         </Question>
         <Divider />
 
-        <Question id="q10" num="10" label="리빙시퀀스에서 업체 브랜딩 리뉴얼을 제작해드릴 예정입니다. 관심이 있으십니까?">
+        <Question id="q10" num="10" label="업체 브랜딩 리뉴얼에 관심이 있으십니까?">
           <RadioGroup name="q10" options={["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"]} value={form.q10.value} onChange={(v) => { setForm({ ...form, q10: { value: v, q10_2: v === "관심 없다" ? form.q10.q10_2 : undefined } }); }} />
           {form.q10.value === "관심 없다" && (
             <SubQuestion label="관심이 없는 이유는?">
-              <RadioGroup name="q10_2" options={["이미 충분히 갖추고 있다", "포트폴리오보다 실제 고객 유입이 중요하다"]} hasOther value={form.q10.q10_2?.value ?? ""} otherValue={form.q10.q10_2?.other} onChange={(v) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: "기타", other: o } } })} />
+              <RadioGroup name="q10_2" options={["이미 충분히 갖추고 있다", "브랜딩보다 실제 고객 유입이 더 중요하다"]} hasOther value={form.q10.q10_2?.value ?? ""} otherValue={form.q10.q10_2?.other} onChange={(v) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q10: { ...form.q10, q10_2: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
         </Question>
