@@ -249,7 +249,7 @@ export default function SurveyPage() {
         <Divider />
 
         <Question id="q11" num="11" label="오늘 소개한 솔루션 중 가장 매력적인 것은?" optional="복수 선택 가능">
-          <CheckboxGroup name="q11" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠(영상/사진) 자동 생성", "브랜드 프로필 제작"]} hasOther values={form.q11.values} otherValue={form.q11.other} onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })} onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })} />
+          <CheckboxGroup name="q11" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "브랜드 프로필 제작"]} hasOther values={form.q11.values} otherValue={form.q11.other} onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })} onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })} />
           <div className="mt-5">
             <div className="text-[13px] font-medium text-[var(--teal)] mb-3">
               선택한 이유를 간단히 적어주세요 <span className="text-[11px] text-[var(--muted)] font-normal ml-0.5">선택</span>
