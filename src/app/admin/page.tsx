@@ -29,6 +29,8 @@ const QUESTIONS: { key: string; label: string; type: "text" | "radio" | "checkbo
   { key: "q17", label: "추가 의견/제안", type: "text" },
 ];
 
+const COLORS = ["#03C75A", "#2DB400", "#00B493", "#0085FF", "#6C5CE7", "#E17055", "#FDCB6E", "#636E72"];
+
 export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [authed, setAuthed] = useState(false);
@@ -157,7 +159,7 @@ export default function AdminPage() {
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="w-7 h-7 rounded-full bg-[#f7f7f7] flex items-center justify-center font-figtree text-xs font-bold text-[#999]">
+                      <span className="w-7 h-7 rounded-full bg-[#03C75A] flex items-center justify-center font-figtree text-xs font-bold text-white">
                         {data.length - i}
                       </span>
                       <span className="text-xs text-[#999]">
@@ -165,10 +167,10 @@ export default function AdminPage() {
                       </span>
                     </div>
                     {row.metadata?.completionTimeSeconds ? (
-                      <span className="text-[11px] text-[#ccc]">{formatTime(row.metadata.completionTimeSeconds as number)}</span>
+                      <span className="text-[11px] text-[#999] bg-[#f7f7f7] px-2 py-0.5 rounded-full">{formatTime(row.metadata.completionTimeSeconds as number)}</span>
                     ) : null}
                   </div>
-                  <p className="text-sm text-[#333] line-clamp-2 mb-3">
+                  <p className="text-[15px] text-[#111] leading-relaxed mb-3 font-medium">
                     {formatPreview(row.responses.q1)}
                   </p>
                   <div className="flex gap-1.5 flex-wrap">
@@ -196,21 +198,23 @@ export default function AdminPage() {
                   <h2 className="text-base font-semibold text-[#111]">응답 상세</h2>
                   <div className="flex items-center gap-3">
                     {selected.metadata?.completionTimeSeconds ? (
-                      <span className="text-xs text-[#999]">소요 {formatTime(selected.metadata.completionTimeSeconds as number)}</span>
+                      <span className="text-xs text-[#03C75A] bg-[#03C75A]/10 px-2.5 py-1 rounded-full font-medium">
+                        {formatTime(selected.metadata.completionTimeSeconds as number)} 소요
+                      </span>
                     ) : null}
                     <span className="text-xs text-[#999]">
                       {new Date(selected.created_at).toLocaleString("ko-KR")}
                     </span>
                   </div>
                 </div>
-                <div className="divide-y divide-[#eee]">
+                <div className="divide-y divide-[#f0f0f0]">
                   {QUESTIONS.map(({ key, label }) => {
                     const answer = selected.responses[key];
                     if (answer === null || answer === undefined || answer === "") return null;
                     return (
                       <div key={key} className="px-6 py-5">
-                        <div className="text-[11px] font-medium text-[#999] mb-2 uppercase tracking-wider font-figtree">Q{key.slice(1)}. {label}</div>
-                        <div className="text-sm text-[#333] leading-relaxed">
+                        <div className="text-[12px] font-semibold text-[#03C75A] mb-2 font-figtree">Q{key.slice(1)}. {label}</div>
+                        <div className="text-[15px] text-[#222] leading-[1.8]">
                           {renderAnswer(key, answer)}
                         </div>
                       </div>
@@ -242,19 +246,19 @@ export default function AdminPage() {
                     className="bg-white rounded-2xl p-5 text-left hover:shadow-md transition-shadow w-full"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-figtree text-xs font-bold text-[#999]">Q{key.slice(1)}</span>
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full ${
+                      <span className="font-figtree text-xs font-bold text-[#03C75A]">Q{key.slice(1)}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
                         type === "text" ? "bg-blue-50 text-blue-500" : type === "radio" ? "bg-green-50 text-green-600" : "bg-purple-50 text-purple-500"
                       }`}>
                         {type === "text" ? "주관식" : type === "radio" ? "단일선택" : "복수선택"}
                       </span>
                     </div>
-                    <p className="text-sm text-[#333] mb-3">{label}</p>
+                    <p className="text-[14px] text-[#222] mb-3 font-medium">{label}</p>
                     <div className="flex items-center gap-3">
-                      <div className="flex-1 h-1.5 bg-[#eee] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#111] rounded-full transition-all" style={{ width: `${rate}%` }} />
+                      <div className="flex-1 h-2 bg-[#eee] rounded-full overflow-hidden">
+                        <div className="h-full bg-[#03C75A] rounded-full transition-all" style={{ width: `${rate}%` }} />
                       </div>
-                      <span className="text-xs text-[#999] font-figtree">{count}/{data.length}</span>
+                      <span className="text-xs text-[#666] font-figtree font-semibold">{count}/{data.length} <span className="text-[#999] font-normal">({rate}%)</span></span>
                     </div>
                   </button>
                 );
@@ -295,53 +299,69 @@ export default function AdminPage() {
                   });
                 }
                 const sortedCounts = Object.entries(valueCounts).sort((a, b) => b[1] - a[1]);
-                const maxCount = sortedCounts.length > 0 ? sortedCounts[0][1] : 1;
+                const total = answers.length || 1;
 
                 return (
                   <div className="bg-white rounded-2xl overflow-hidden">
-                    <div className="px-6 py-5 border-b border-[#eee]">
-                      <div className="text-[11px] font-medium text-[#999] mb-1 uppercase tracking-wider font-figtree">Q{selectedQ.slice(1)}</div>
-                      <h2 className="text-base font-semibold text-[#111]">{q.label}</h2>
-                      <div className="text-xs text-[#999] mt-1">{answers.length}명 응답</div>
+                    <div className="px-6 py-5 border-b border-[#f0f0f0]">
+                      <div className="text-[12px] font-semibold text-[#03C75A] mb-1 font-figtree">Q{selectedQ.slice(1)}</div>
+                      <h2 className="text-[16px] font-semibold text-[#111]">{q.label}</h2>
+                      <div className="text-xs text-[#999] mt-1.5">
+                        <span className="text-[#03C75A] font-semibold">{answers.length}명</span> 응답 / 전체 {data.length}명
+                      </div>
                     </div>
 
+                    {/* Bar chart */}
                     {(q.type === "radio" || q.type === "checkbox") && sortedCounts.length > 0 && (
-                      <div className="px-6 py-5 border-b border-[#eee]">
-                        <div className="space-y-3">
-                          {sortedCounts.map(([label, count]) => (
-                            <div key={label}>
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-sm text-[#333]">{label}</span>
-                                <span className="text-xs text-[#999] font-figtree">{count}명 ({data.length > 0 ? Math.round((count / data.length) * 100) : 0}%)</span>
+                      <div className="px-6 py-6 border-b border-[#f0f0f0]">
+                        <div className="space-y-4">
+                          {sortedCounts.map(([label, count], idx) => {
+                            const pct = Math.round((count / total) * 100);
+                            const color = COLORS[idx % COLORS.length];
+                            return (
+                              <div key={label}>
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="text-[14px] text-[#222] font-medium">{label}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[13px] font-semibold font-figtree" style={{ color }}>{pct}%</span>
+                                    <span className="text-[12px] text-[#999] font-figtree">{count}명</span>
+                                  </div>
+                                </div>
+                                <div className="h-3 bg-[#f0f0f0] rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full rounded-full transition-all"
+                                    style={{ width: `${pct}%`, backgroundColor: color }}
+                                  />
+                                </div>
                               </div>
-                              <div className="h-2.5 bg-[#f7f7f7] rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-[#111] rounded-full transition-all"
-                                  style={{ width: `${(count / maxCount) * 100}%` }}
-                                />
-                              </div>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}
 
-                    <div className="divide-y divide-[#eee]">
-                      {answers.map(({ answer, time }, i) => (
-                        <div key={i} className="px-6 py-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="w-6 h-6 rounded-full bg-[#f7f7f7] flex items-center justify-center font-figtree text-[11px] font-bold text-[#999]">
-                              {answers.length - i}
-                            </span>
-                            <span className="text-[11px] text-[#ccc]">
-                              {new Date(time).toLocaleString("ko-KR")}
-                            </span>
+                    {/* Individual answers */}
+                    <div>
+                      <div className="px-6 py-3 bg-[#fafafa] border-b border-[#f0f0f0]">
+                        <span className="text-[12px] text-[#999] font-medium">개별 응답</span>
+                      </div>
+                      <div className="divide-y divide-[#f0f0f0]">
+                        {answers.map(({ answer, time }, i) => (
+                          <div key={i} className="px-6 py-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[12px] font-semibold text-[#03C75A] font-figtree">
+                                응답 {answers.length - i}
+                              </span>
+                              <span className="text-[11px] text-[#bbb]">
+                                {new Date(time).toLocaleString("ko-KR")}
+                              </span>
+                            </div>
+                            <div className="text-[15px] text-[#222] leading-[1.8]">
+                              {renderAnswer(selectedQ, answer)}
+                            </div>
                           </div>
-                          <div className="text-sm text-[#333] leading-relaxed">
-                            {renderAnswer(selectedQ, answer)}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );
@@ -368,7 +388,7 @@ function formatTags(responses: Record<string, unknown>) {
   const q10 = responses.q10 as { value?: string } | undefined;
   if (q10?.value) tags.push(q10.value);
   return tags.slice(0, 3).map((t, i) => (
-    <span key={`${i}-${t}`} className="px-2 py-0.5 bg-[#f7f7f7] rounded-md text-[11px] text-[#999]">{t}</span>
+    <span key={`${i}-${t}`} className="px-2.5 py-1 bg-[#f0f5f0] rounded-lg text-[11px] text-[#03C75A] font-medium">{t}</span>
   ));
 }
 
@@ -382,15 +402,15 @@ function renderAnswer(key: string, answer: unknown): React.ReactNode {
       const subs = Object.keys(obj).filter((k) => k !== "value" && k !== "other" && (k.startsWith(key + "_") || k.startsWith("q")));
       return (
         <div>
-          <p>{String(obj.value)}{obj.other ? ` (기타: ${String(obj.other)})` : ""}</p>
+          <p className="font-medium">{String(obj.value)}{obj.other ? <span className="text-[#999] font-normal"> (기타: {String(obj.other)})</span> : ""}</p>
           {subs.map((sk) => {
             const sub = obj[sk];
             if (!sub) return null;
-            if (typeof sub === "string") return <p key={sk} className="mt-1.5 pl-3 border-l-2 border-[#eee] text-[#666]">{sub}</p>;
+            if (typeof sub === "string") return <p key={sk} className="mt-2 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">{sub}</p>;
             const subObj = sub as Record<string, unknown>;
             return (
-              <p key={sk} className="mt-1.5 pl-3 border-l-2 border-[#eee] text-[#666]">
-                → {String(subObj.value)}{subObj.other ? ` (${String(subObj.other)})` : ""}
+              <p key={sk} className="mt-2 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">
+                {String(subObj.value)}{subObj.other ? <span className="text-[#999]"> ({String(subObj.other)})</span> : ""}
               </p>
             );
           })}
@@ -402,20 +422,20 @@ function renderAnswer(key: string, answer: unknown): React.ReactNode {
       const vals = obj.values as string[];
       return (
         <div>
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             {vals.map((v) => (
-              <span key={v} className="px-2.5 py-1 bg-[#f7f7f7] rounded-lg text-[12px] text-[#333]">{v}</span>
+              <span key={v} className="px-3 py-1.5 bg-[#f0f5f0] rounded-lg text-[13px] text-[#222] font-medium">{v}</span>
             ))}
           </div>
-          {obj.other ? <p className="mt-1.5 text-[#666]">기타: {String(obj.other)}</p> : null}
-          {obj.reason ? <p className="mt-1.5 pl-3 border-l-2 border-[#eee] text-[#666]">{String(obj.reason)}</p> : null}
+          {obj.other ? <p className="mt-2 text-[#666] text-[14px]">기타: {String(obj.other)}</p> : null}
+          {obj.reason ? <p className="mt-2 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">{String(obj.reason)}</p> : null}
           {Object.keys(obj).filter((k) => k.startsWith("q")).map((sk) => {
             const sub = obj[sk];
             if (!sub) return null;
             const subObj = sub as Record<string, unknown>;
             return (
-              <p key={sk} className="mt-1.5 pl-3 border-l-2 border-[#eee] text-[#666]">
-                → {String(subObj.value)}{subObj.other ? ` (${String(subObj.other)})` : ""}
+              <p key={sk} className="mt-2 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">
+                {String(subObj.value)}{subObj.other ? <span className="text-[#999]"> ({String(subObj.other)})</span> : ""}
               </p>
             );
           })}
