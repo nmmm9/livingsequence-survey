@@ -192,7 +192,7 @@ export default function SurveyPage() {
         <Divider />
         <QuestionTextarea num="03" label="지금까지 경험 중 계약이 무산된 가장 흔한 이유는?" optional value={form.q3} onChange={(v) => setForm({ ...form, q3: v })} />
         <Divider />
-        <QuestionTextarea num="04" label="시공 후 고객 불만이 발생했을 때, 가장 어려웠던 점은?" optional value={form.q4} onChange={(v) => setForm({ ...form, q4: v })} />
+        <QuestionTextarea num="04" label="고객과의 소통 과정에서 가장 자주 발생하는 문제나 어려움은 무엇입니까?" optional value={form.q4} onChange={(v) => setForm({ ...form, q4: v })} />
         <Divider />
         <QuestionTextarea num="05" label="현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?" optional value={form.q5} onChange={(v) => setForm({ ...form, q5: v })} />
         <Divider />
@@ -217,22 +217,22 @@ export default function SurveyPage() {
         <QuestionTextarea num="08" label="취향Kit에 있으면 좋겠다고 생각하는 고객 정보가 있다면?" optional value={form.q8} onChange={(v) => setForm({ ...form, q8: v })} />
         <Divider />
 
-        <Question id="q9" num="09" label="고객의 취향 분석 결과를 기반으로 매칭된 업체 추천 리스트를 고객이 받아본다면, 기존 상담 방식 대비 계약 전환에 도움이 될 것 같습니까?">
+        <Question id="q9" num="09" label="이 플랫폼을 사용하면, 기존 대비 계약 전환율이 개선될 것이라고 생각하십니까?">
           <RadioGroup name="q9" options={["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"]} value={form.q9.value} onChange={(v) => { const positive = v === "매우 그렇다" || v === "그렇다"; const negative = v === "아니다" || v === "전혀 아니다"; setForm({ ...form, q9: { value: v, q9_1: positive ? form.q9.q9_1 : undefined, q9_2: negative ? form.q9.q9_2 : undefined } }); }} />
           {(form.q9.value === "매우 그렇다" || form.q9.value === "그렇다") && (
-            <SubQuestion label="가장 도움이 될 것 같은 이유는?">
-              <RadioGroup name="q9_1" options={["고객이 이미 우리 스타일을 이해하고 오니까", "초기 신뢰가 형성된 상태에서 상담 시작", "불필요한 비교 견적 경쟁이 줄어들 것 같아서"]} hasOther value={form.q9.q9_1?.value ?? ""} otherValue={form.q9.q9_1?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: "기타", other: o } } })} />
+            <SubQuestion label="가장 크게 기대되는 부분은?">
+              <RadioGroup name="q9_1" options={["사전 정보로 상담 효율 향상", "고객 신뢰가 높은 상태에서 시작", "불필요한 비교 견적 경쟁 감소"]} hasOther value={form.q9.q9_1?.value ?? ""} otherValue={form.q9.q9_1?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_1: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
           {(form.q9.value === "아니다" || form.q9.value === "전혀 아니다") && (
-            <SubQuestion label="매칭 추천이 계약에 도움이 안 될 것 같은 이유는?">
-              <RadioGroup name="q9_2" options={["고객은 결국 가격으로 결정한다", "AI가 우리 업체 강점을 제대로 파악하기 어렵다", "추천 리스트에 경쟁 업체도 같이 나오면 의미 없다"]} hasOther value={form.q9.q9_2?.value ?? ""} otherValue={form.q9.q9_2?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: "기타", other: o } } })} />
+            <SubQuestion label="개선되기 어렵다고 생각하는 이유는?">
+              <RadioGroup name="q9_2" options={["고객은 결국 가격으로 결정한다", "플랫폼만으로는 신뢰 형성이 어렵다", "기존 방식과 큰 차이가 없을 것 같다"]} hasOther value={form.q9.q9_2?.value ?? ""} otherValue={form.q9.q9_2?.other} onChange={(v) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: v } } })} onOtherChange={(o) => setForm({ ...form, q9: { ...form.q9, q9_2: { value: "기타", other: o } } })} />
             </SubQuestion>
           )}
         </Question>
         <Divider />
 
-        <Question id="q10" num="10" label="브랜드 프로필(포트폴리오 리뉴얼)을 리빙시퀀스가 제작해드린다면 관심이 있으십니까?">
+        <Question id="q10" num="10" label="리빙시퀀스에서 업체 브랜딩 리뉴얼을 제작해드릴 예정입니다. 관심이 있으십니까?">
           <RadioGroup name="q10" options={["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"]} value={form.q10.value} onChange={(v) => { setForm({ ...form, q10: { value: v, q10_2: v === "관심 없다" ? form.q10.q10_2 : undefined } }); }} />
           {form.q10.value === "관심 없다" && (
             <SubQuestion label="관심이 없는 이유는?">
@@ -243,7 +243,7 @@ export default function SurveyPage() {
         <Divider />
 
         <Question id="q11" num="11" label="오늘 소개한 솔루션 중 가장 매력적인 것은?" optional="복수 선택 가능">
-          <CheckboxGroup name="q11" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "브랜드 프로필 제작"]} hasOther values={form.q11.values} otherValue={form.q11.other} onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })} onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })} />
+          <CheckboxGroup name="q11" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "업체 브랜딩 리뉴얼"]} hasOther values={form.q11.values} otherValue={form.q11.other} onChange={(vs) => setForm({ ...form, q11: { ...form.q11, values: vs } })} onOtherChange={(o) => setForm({ ...form, q11: { ...form.q11, other: o } })} />
           <div className="mt-5">
             <div className="text-[13px] font-medium text-[var(--teal)] mb-3">
               선택한 이유를 간단히 적어주세요 <span className="text-[11px] text-[var(--muted)] font-normal ml-0.5">선택</span>
@@ -254,7 +254,7 @@ export default function SurveyPage() {
         <Divider />
 
         <Question id="q12" num="12" label="반대로, 실효성이 낮을 것 같은 솔루션이 있다면?">
-          <CheckboxGroup name="q12" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "브랜드 프로필 제작", "없다"]} values={form.q12.values} onChange={(vs) => setForm({ ...form, q12: { ...form.q12, values: vs } })} />
+          <CheckboxGroup name="q12" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "업체 브랜딩 리뉴얼", "없다"]} values={form.q12.values} onChange={(vs) => setForm({ ...form, q12: { ...form.q12, values: vs } })} />
           {form.q12.values.length > 0 && !form.q12.values.every((v) => v === "없다") && (
             <SubQuestion label="실효성이 낮다고 생각하는 이유는?" optional>
               <textarea className="survey-textarea" placeholder="자유롭게 적어주세요" value={form.q12.reason ?? ""} onChange={(e) => setForm({ ...form, q12: { ...form.q12, reason: e.target.value } })} />

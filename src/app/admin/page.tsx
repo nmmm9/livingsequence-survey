@@ -20,15 +20,15 @@ const QUESTIONS: QuestionDef[] = [
   { key: "q1", label: "오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요.", type: "text" },
   { key: "q2", label: "대표님이 생각하시기에, 고객이 인테리어 업체를 선택할 때 가장 중요하게 보는 기준은 무엇입니까?", type: "radio", options: ["가격/견적", "시공 사례/포트폴리오", "지인 추천/입소문", "디자인 감각/스타일 적합성", "소통/응대 속도", "기타"] },
   { key: "q3", label: "지금까지 경험 중 계약이 무산된 가장 흔한 이유는?", type: "text" },
-  { key: "q4", label: "시공 후 고객 불만이 발생했을 때, 가장 어려웠던 점은?", type: "text" },
+  { key: "q4", label: "고객과의 소통 과정에서 가장 자주 발생하는 문제나 어려움은 무엇입니까?", type: "text" },
   { key: "q5", label: "현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?", type: "text" },
   { key: "q6", label: "플랫폼이 아닌, 대표님이 직접 해결하고 싶은 업무상 가장 큰 고민은?", type: "text" },
   { key: "q7", label: "취향Kit을 통해 고객 정보, 스타일이 사전에 정리되어 전달된다면, 초기 상담 시간이 줄어들 것 같습니까?", type: "radio", options: ["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"] },
   { key: "q8", label: "취향Kit에 있으면 좋겠다고 생각하는 고객 정보가 있다면?", type: "text" },
-  { key: "q9", label: "고객의 취향 분석 결과를 기반으로 매칭된 업체 추천 리스트를 고객이 받아본다면, 기존 상담 방식 대비 계약 전환에 도움이 될 것 같습니까?", type: "radio", options: ["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"] },
-  { key: "q10", label: "브랜드 프로필(포트폴리오 리뉴얼)을 리빙시퀀스가 제작해드린다면 관심이 있으십니까?", type: "radio", options: ["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"] },
-  { key: "q11", label: "오늘 소개한 솔루션 중 가장 매력적인 것은?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "브랜드 프로필 제작", "기타"] },
-  { key: "q12", label: "반대로, 실효성이 낮을 것 같은 솔루션이 있다면?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "브랜드 프로필 제작", "없다"] },
+  { key: "q9", label: "이 플랫폼을 사용하면, 기존 대비 계약 전환율이 개선될 것이라고 생각하십니까?", type: "radio", options: ["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"] },
+  { key: "q10", label: "리빙시퀀스에서 업체 브랜딩 리뉴얼을 제작해드릴 예정입니다. 관심이 있으십니까?", type: "radio", options: ["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"] },
+  { key: "q11", label: "오늘 소개한 솔루션 중 가장 매력적인 것은?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "업체 브랜딩 리뉴얼", "기타"] },
+  { key: "q12", label: "반대로, 실효성이 낮을 것 같은 솔루션이 있다면?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "업체 브랜딩 리뉴얼", "없다"] },
   { key: "q13", label: "플랫폼을 통해 가장 개선되길 기대하는 업무는?", type: "checkbox", options: ["신규 고객 확보", "초기 상담/니즈 파악", "견적~계약 과정", "시공 중 고객 소통", "시공 후 클레임/AS 관리", "브랜딩/마케팅", "기타"] },
   { key: "q14", label: "이 플랫폼에 부족하다고 느끼는 기능이나 서비스가 있다면?", type: "text" },
   { key: "q15", label: "가장 우려되는 점은?", type: "checkbox", options: ["실제 고객이 유입될지 불확실", "대형 플랫폼과 경쟁 가능한지", "AI 매칭의 정확도", "아직 검증되지 않은 플랫폼이라 불안", "데이터 보안/개인정보 문제", "기타"] },
@@ -418,10 +418,10 @@ function formatSummary(responses: Record<string, unknown>) {
   if (q7?.value) items.push({ label: "상담시간 단축", value: q7.value });
 
   const q9 = responses.q9 as { value?: string } | undefined;
-  if (q9?.value) items.push({ label: "매칭 도움", value: q9.value });
+  if (q9?.value) items.push({ label: "전환율 개선", value: q9.value });
 
   const q10 = responses.q10 as { value?: string } | undefined;
-  if (q10?.value) items.push({ label: "프로필 관심", value: q10.value });
+  if (q10?.value) items.push({ label: "브랜딩 관심", value: q10.value });
 
   const q11 = responses.q11 as { values?: string[] } | undefined;
   if (q11?.values?.length) items.push({ label: "매력 솔루션", value: q11.values.join(", ") });
