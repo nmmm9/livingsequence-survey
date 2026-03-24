@@ -248,91 +248,130 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ── 질문별 ── */}
-          {view === "question" && !selectedQ && (
-            <div className="grid gap-3">
-              {QUESTIONS.map(({ key, label, type }) => {
-                const count = data.filter((r) => {
-                  const a = r.responses[key];
-                  if (!a) return false;
-                  if (typeof a === "string") return a.length > 0;
-                  if (typeof a === "object" && "value" in (a as Record<string, unknown>)) return !!(a as Record<string, unknown>).value;
-                  if (typeof a === "object" && "values" in (a as Record<string, unknown>)) return ((a as Record<string, unknown>).values as string[]).length > 0;
-                  return false;
-                }).length;
-
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedQ(key)}
-                    className="bg-white rounded-2xl p-5 text-left hover:shadow-md transition-shadow w-full"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-figtree text-xs font-bold text-[#03C75A]">Q{key.slice(1)}</span>
-                      <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                        type === "text" ? "bg-blue-50 text-blue-500" : type === "radio" ? "bg-green-50 text-green-600" : "bg-purple-50 text-purple-500"
-                      }`}>
-                        {type === "text" ? "주관식" : type === "radio" ? "단일선택" : "복수선택"}
-                      </span>
-                    </div>
-                    <p className="text-[14px] text-[#222] font-medium">{label}</p>
-                    <div className="text-[12px] text-[#999] mt-2"><span className="text-[#03C75A] font-semibold">{count}</span>명 응답</div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ── 질문별: 상세 ── */}
-          {view === "question" && selectedQ && (
-            <div>
-              <button
-                onClick={() => setSelectedQ(null)}
-                className="mb-4 px-4 py-2 bg-white rounded-xl text-sm text-[#666] hover:bg-[#eee] transition-colors"
-              >
-                ← 질문 목록으로
-              </button>
-
-              {(() => {
-                const q = QUESTIONS.find((q) => q.key === selectedQ)!;
+          {/* ── 질문별: 한 페이지에 모두 펼쳐서 ── */}
+          {view === "question" && (
+            <div className="grid gap-4">
+              {QUESTIONS.map((q) => {
                 const answers = data
-                  .map((r, idx) => ({ answer: r.responses[selectedQ], time: r.created_at, num: data.length - idx }))
+                  .map((r, idx) => ({ answer: r.responses[q.key], num: data.length - idx }))
                   .filter((a) => {
                     if (!a.answer) return false;
                     if (typeof a.answer === "string") return a.answer.length > 0;
-                    return true;
+                    if (typeof a.answer === "object" && "value" in (a.answer as Record<string, unknown>)) return !!(a.answer as Record<string, unknown>).value;
+                    if (typeof a.answer === "object" && "values" in (a.answer as Record<string, unknown>)) return ((a.answer as Record<string, unknown>).values as string[]).length > 0;
+                    return false;
                   });
 
+                if (answers.length === 0) return null;
+
+                // 객관식: 통계
+                const valueCounts: Record<string, number> = {};
+                if (q.type === "radio") {
+                  answers.forEach(({ answer }) => {
+                    const val = (answer as Record<string, unknown>).value as string;
+                    if (val) valueCounts[val] = (valueCounts[val] || 0) + 1;
+                  });
+                } else if (q.type === "checkbox") {
+                  answers.forEach(({ answer }) => {
+                    const vals = (answer as Record<string, unknown>).values as string[];
+                    vals?.forEach((v) => { valueCounts[v] = (valueCounts[v] || 0) + 1; });
+                  });
+                }
+                const sortedCounts = Object.entries(valueCounts).sort((a, b) => b[1] - a[1]);
+                const maxCount = sortedCounts.length > 0 ? sortedCounts[0][1] : 1;
+
                 return (
-                  <div className="bg-white rounded-2xl overflow-hidden">
+                  <div key={q.key} className="bg-white rounded-2xl overflow-hidden">
+                    {/* 질문 헤더 */}
                     <div className="px-6 py-5 border-b border-[#f0f0f0]">
-                      <div className="text-[12px] font-semibold text-[#03C75A] mb-1 font-figtree">Q{selectedQ.slice(1)}</div>
-                      <h2 className="text-[16px] font-semibold text-[#111]">{q.label}</h2>
-                      <div className="text-xs text-[#999] mt-1.5">
-                        <span className="text-[#03C75A] font-semibold">{answers.length}명</span> 응답
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-figtree text-[12px] font-bold text-[#03C75A]">Q{q.key.slice(1)}</span>
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                          q.type === "text" ? "bg-blue-50 text-blue-500" : q.type === "radio" ? "bg-green-50 text-green-600" : "bg-purple-50 text-purple-500"
+                        }`}>
+                          {q.type === "text" ? "주관식" : q.type === "radio" ? "단일선택" : "복수선택"}
+                        </span>
                       </div>
+                      <h3 className="text-[15px] font-semibold text-[#111] leading-relaxed">{q.label}</h3>
+                      <div className="text-[12px] text-[#999] mt-1"><span className="text-[#03C75A] font-semibold">{answers.length}</span>명 응답</div>
                     </div>
 
-                    <div className="divide-y divide-[#f0f0f0]">
-                      {answers.map(({ answer, time, num }, i) => (
-                        <div key={i} className="px-6 py-5">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-[12px] font-semibold text-[#03C75A] font-figtree">
-                              응답자 {num}
-                            </span>
-                            <span className="text-[11px] text-[#bbb]">
-                              {new Date(time).toLocaleString("ko-KR")}
-                            </span>
-                          </div>
-                          <div className="text-[15px] text-[#222] leading-[1.8]">
-                            {renderAnswer(selectedQ, answer)}
+                    {/* 객관식: 바 차트 */}
+                    {(q.type === "radio" || q.type === "checkbox") && sortedCounts.length > 0 && (
+                      <div className="px-6 py-5 border-b border-[#f0f0f0]">
+                        <div className="space-y-3">
+                          {sortedCounts.map(([label, count], idx) => {
+                            const pct = answers.length > 0 ? Math.round((count / answers.length) * 100) : 0;
+                            const colors = ["#03C75A", "#2DB400", "#00B493", "#0085FF", "#6C5CE7", "#E17055", "#FDCB6E", "#636E72"];
+                            const color = colors[idx % colors.length];
+                            return (
+                              <div key={label}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-[13px] text-[#222]">{label}</span>
+                                  <span className="text-[12px] font-semibold font-figtree" style={{ color }}>{pct}% <span className="text-[#999] font-normal">({count}명)</span></span>
+                                </div>
+                                <div className="h-2.5 bg-[#f0f0f0] rounded-full overflow-hidden">
+                                  <div className="h-full rounded-full transition-all" style={{ width: `${(count / maxCount) * 100}%`, backgroundColor: color }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 주관식: 답변 나열 */}
+                    {q.type === "text" && (
+                      <div className="px-6 py-4">
+                        <div className="space-y-2.5">
+                          {answers.map(({ answer, num }, i) => (
+                            <div key={i} className="flex gap-3 items-start">
+                              <span className="text-[11px] text-[#03C75A] font-semibold font-figtree shrink-0 mt-0.5">{num}</span>
+                              <p className="text-[14px] text-[#333] leading-relaxed">{typeof answer === "string" ? answer : JSON.stringify(answer)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 객관식: 기타/하위응답 있는 것만 펼쳐서 */}
+                    {(q.type === "radio" || q.type === "checkbox") && (() => {
+                      const extras = answers.filter(({ answer }) => {
+                        const obj = answer as Record<string, unknown>;
+                        if (obj.other) return true;
+                        if (obj.reason) return true;
+                        const subs = Object.keys(obj).filter((k) => k.startsWith("q"));
+                        return subs.some((k) => !!obj[k]);
+                      });
+                      if (extras.length === 0) return null;
+                      return (
+                        <div className="px-6 py-4 border-t border-[#f0f0f0]">
+                          <div className="text-[11px] text-[#999] font-medium mb-2">추가 응답</div>
+                          <div className="space-y-2.5">
+                            {extras.map(({ answer, num }, i) => {
+                              const obj = answer as Record<string, unknown>;
+                              const parts: string[] = [];
+                              if (obj.other) parts.push(`기타: ${String(obj.other)}`);
+                              if (obj.reason) parts.push(String(obj.reason));
+                              Object.keys(obj).filter((k) => k.startsWith("q")).forEach((k) => {
+                                const sub = obj[k] as Record<string, unknown> | null;
+                                if (sub) parts.push(`→ ${String(sub.value)}${sub.other ? ` (${String(sub.other)})` : ""}`);
+                              });
+                              if (parts.length === 0) return null;
+                              return (
+                                <div key={i} className="flex gap-3 items-start">
+                                  <span className="text-[11px] text-[#03C75A] font-semibold font-figtree shrink-0 mt-0.5">{num}</span>
+                                  <p className="text-[14px] text-[#555] leading-relaxed">{parts.join(" / ")}</p>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })()}
                   </div>
                 );
-              })()}
+              })}
             </div>
           )}
         </div>
