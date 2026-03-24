@@ -258,7 +258,7 @@ export default function SurveyPage() {
         <Question id="q12" num="12" label="반대로, 실효성이 낮을 것 같은 솔루션이 있다면?">
           <CheckboxGroup name="q12" options={["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "브랜드 프로필 제작", "없다"]} values={form.q12.values} onChange={(vs) => setForm({ ...form, q12: { ...form.q12, values: vs } })} />
           {form.q12.values.length > 0 && !form.q12.values.every((v) => v === "없다") && (
-            <SubQuestion label="실효성이 낮다고 생각하는 이유는?">
+            <SubQuestion label="실효성이 낮다고 생각하는 이유는?" optional>
               <textarea className="survey-textarea" placeholder="자유롭게 적어주세요" value={form.q12.reason ?? ""} onChange={(e) => setForm({ ...form, q12: { ...form.q12, reason: e.target.value } })} />
             </SubQuestion>
           )}
@@ -600,10 +600,10 @@ function CheckboxGroup({
   );
 }
 
-function SubQuestion({ label, children }: { label: string; children: React.ReactNode }) {
+function SubQuestion({ label, optional, children }: { label: string; optional?: boolean; children: React.ReactNode }) {
   return (
     <div className="mt-3.5 p-5 bg-[var(--bg)] rounded-[14px] animate-[fadeIn_0.25s_ease]">
-      <div className="text-[13px] font-medium text-[var(--teal)] mb-3">{label}</div>
+      <div className="text-[13px] font-medium text-[var(--teal)] mb-3">{label}{optional && <span className="text-[11px] text-[var(--muted)] font-normal ml-1">선택</span>}</div>
       {children}
     </div>
   );
