@@ -8,7 +8,7 @@ export default function ThankYou() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#111111] flex items-center justify-center">
+    <div className="min-h-screen bg-[#111111] flex items-center justify-center pb-[15vh]">
       <div className="text-center px-7">
         <img src="/logo.png" alt="Living Sequence" className="h-[60px] mx-auto mb-8" />
         <h1 className="text-[36px] font-semibold tracking-tight text-white mb-5">
