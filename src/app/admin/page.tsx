@@ -9,24 +9,31 @@ interface SurveyRow {
   created_at: string;
 }
 
-const QUESTIONS: { key: string; label: string; type: "text" | "radio" | "checkbox" }[] = [
-  { key: "q1", label: "리빙시퀀스의 첫인상", type: "text" },
-  { key: "q2", label: "고객이 인테리어 업체 선택 시 가장 중요한 기준", type: "radio" },
-  { key: "q3", label: "계약이 무산된 가장 흔한 이유", type: "text" },
-  { key: "q4", label: "시공 후 고객 불만 시 어려웠던 점", type: "text" },
-  { key: "q5", label: "인테리어 시장에서 가장 시급히 바뀌어야 할 것", type: "text" },
-  { key: "q6", label: "대표님의 가장 큰 업무 고민", type: "text" },
-  { key: "q7", label: "취향Kit으로 초기 상담 시간 단축 여부", type: "radio" },
-  { key: "q8", label: "취향Kit에 있으면 좋겠는 고객 정보", type: "text" },
-  { key: "q9", label: "매칭 추천 리스트의 계약 전환 도움 여부", type: "radio" },
-  { key: "q10", label: "브랜드 프로필 제작 관심 여부", type: "radio" },
-  { key: "q11", label: "가장 매력적인 솔루션", type: "checkbox" },
-  { key: "q12", label: "실효성 낮은 솔루션", type: "checkbox" },
-  { key: "q13", label: "가장 개선 기대 업무", type: "checkbox" },
-  { key: "q14", label: "부족한 기능/서비스", type: "text" },
-  { key: "q15", label: "가장 우려되는 점", type: "checkbox" },
-  { key: "q16", label: "가장 불안한 시나리오", type: "text" },
-  { key: "q17", label: "추가 의견/제안", type: "text" },
+interface QuestionDef {
+  key: string;
+  label: string;
+  type: "text" | "radio" | "checkbox";
+  options?: string[];
+}
+
+const QUESTIONS: QuestionDef[] = [
+  { key: "q1", label: "오늘 발표를 듣고, 리빙시퀀스의 첫인상을 자유롭게 표현해주세요.", type: "text" },
+  { key: "q2", label: "대표님이 생각하시기에, 고객이 인테리어 업체를 선택할 때 가장 중요하게 보는 기준은 무엇입니까?", type: "radio", options: ["가격/견적", "시공 사례/포트폴리오", "지인 추천/입소문", "디자인 감각/스타일 적합성", "소통/응대 속도", "기타"] },
+  { key: "q3", label: "지금까지 경험 중 계약이 무산된 가장 흔한 이유는?", type: "text" },
+  { key: "q4", label: "시공 후 고객 불만이 발생했을 때, 가장 어려웠던 점은?", type: "text" },
+  { key: "q5", label: "현재 인테리어 시장에서 가장 시급하게 바뀌어야 한다고 느끼는 것은?", type: "text" },
+  { key: "q6", label: "플랫폼이 아닌, 대표님이 직접 해결하고 싶은 업무상 가장 큰 고민은?", type: "text" },
+  { key: "q7", label: "취향Kit을 통해 고객 정보, 스타일이 사전에 정리되어 전달된다면, 초기 상담 시간이 줄어들 것 같습니까?", type: "radio", options: ["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"] },
+  { key: "q8", label: "취향Kit에 있으면 좋겠다고 생각하는 고객 정보가 있다면?", type: "text" },
+  { key: "q9", label: "고객의 취향 분석 결과를 기반으로 매칭된 업체 추천 리스트를 고객이 받아본다면, 기존 상담 방식 대비 계약 전환에 도움이 될 것 같습니까?", type: "radio", options: ["매우 그렇다", "그렇다", "보통이다", "아니다", "전혀 아니다"] },
+  { key: "q10", label: "브랜드 프로필(포트폴리오 리뉴얼)을 리빙시퀀스가 제작해드린다면 관심이 있으십니까?", type: "radio", options: ["매우 관심 있다", "관심 있다", "보통이다", "관심 없다"] },
+  { key: "q11", label: "오늘 소개한 솔루션 중 가장 매력적인 것은?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "브랜드 프로필 제작", "기타"] },
+  { key: "q12", label: "반대로, 실효성이 낮을 것 같은 솔루션이 있다면?", type: "checkbox", options: ["AI 취향 매칭 (취향Kit)", "올인원 공정관리 APP", "자동 보험 적용", "AI 콘텐츠 자동 생성", "브랜드 프로필 제작", "없다"] },
+  { key: "q13", label: "플랫폼을 통해 가장 개선되길 기대하는 업무는?", type: "checkbox", options: ["신규 고객 확보", "초기 상담/니즈 파악", "견적~계약 과정", "시공 중 고객 소통", "시공 후 클레임/AS 관리", "브랜딩/마케팅", "기타"] },
+  { key: "q14", label: "이 플랫폼에 부족하다고 느끼는 기능이나 서비스가 있다면?", type: "text" },
+  { key: "q15", label: "가장 우려되는 점은?", type: "checkbox", options: ["실제 고객이 유입될지 불확실", "대형 플랫폼과 경쟁 가능한지", "AI 매칭의 정확도", "아직 검증되지 않은 플랫폼이라 불안", "데이터 보안/개인정보 문제", "기타"] },
+  { key: "q16", label: "이 플랫폼과 함께 한다고 했을 때, 가장 불안한 시나리오는?", type: "text" },
+  { key: "q17", label: "추가 의견이나 제안 사항", type: "text" },
 ];
 
 const COLORS = ["#03C75A", "#2DB400", "#00B493", "#0085FF", "#6C5CE7", "#E17055", "#FDCB6E", "#636E72"];
@@ -208,14 +215,15 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className="divide-y divide-[#f0f0f0]">
-                  {QUESTIONS.map(({ key, label }) => {
-                    const answer = selected.responses[key];
+                  {QUESTIONS.map((q) => {
+                    const answer = selected.responses[q.key];
                     if (answer === null || answer === undefined || answer === "") return null;
                     return (
-                      <div key={key} className="px-6 py-5">
-                        <div className="text-[12px] font-semibold text-[#03C75A] mb-2 font-figtree">Q{key.slice(1)}. {label}</div>
+                      <div key={q.key} className="px-6 py-6">
+                        <div className="text-[12px] font-semibold text-[#03C75A] mb-1.5 font-figtree">Q{q.key.slice(1)}</div>
+                        <div className="text-[16px] font-semibold text-[#111] mb-4 leading-relaxed">{q.label}</div>
                         <div className="text-[15px] text-[#222] leading-[1.8]">
-                          {renderAnswer(key, answer)}
+                          {renderDetailAnswer(q, answer)}
                         </div>
                       </div>
                     );
@@ -390,6 +398,115 @@ function formatTags(responses: Record<string, unknown>) {
   return tags.slice(0, 3).map((t, i) => (
     <span key={`${i}-${t}`} className="px-2.5 py-1 bg-[#f0f5f0] rounded-lg text-[11px] text-[#03C75A] font-medium">{t}</span>
   ));
+}
+
+function renderDetailAnswer(q: QuestionDef, answer: unknown): React.ReactNode {
+  // Text questions
+  if (q.type === "text" || !q.options) {
+    if (typeof answer === "string") return <p className="whitespace-pre-wrap bg-[#f9f9f9] rounded-xl px-4 py-3">{answer}</p>;
+    return renderAnswer(q.key, answer);
+  }
+
+  const obj = answer as Record<string, unknown>;
+
+  // Radio - show all options, highlight selected
+  if (q.type === "radio") {
+    const selected = (obj.value as string) || "";
+    const otherText = obj.other as string | undefined;
+    const subs = Object.keys(obj).filter((k) => k !== "value" && k !== "other" && k.startsWith("q"));
+
+    return (
+      <div>
+        <div className="flex flex-col gap-2">
+          {q.options.map((opt) => {
+            const isSelected = selected === opt;
+            return (
+              <div
+                key={opt}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
+                  isSelected
+                    ? "bg-[#111] text-white border-[#111]"
+                    : "bg-[#fafafa] text-[#bbb] border-transparent"
+                }`}
+              >
+                <span className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center shrink-0 ${
+                  isSelected ? "border-white" : "border-[#ddd]"
+                }`}>
+                  {isSelected && <span className="w-[8px] h-[8px] rounded-full bg-white" />}
+                </span>
+                <span className="text-[14px]">{opt}</span>
+                {isSelected && opt === "기타" && otherText && (
+                  <span className="text-[13px] opacity-70">: {otherText}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {subs.map((sk) => {
+          const sub = obj[sk];
+          if (!sub) return null;
+          if (typeof sub === "string") return <p key={sk} className="mt-3 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">{sub}</p>;
+          const subObj = sub as Record<string, unknown>;
+          return (
+            <p key={sk} className="mt-3 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">
+              → {String(subObj.value)}{subObj.other ? <span className="text-[#999]"> ({String(subObj.other)})</span> : ""}
+            </p>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Checkbox - show all options, highlight selected
+  if (q.type === "checkbox") {
+    const selectedVals = (obj.values as string[]) || [];
+    const otherText = obj.other as string | undefined;
+    const reason = obj.reason as string | undefined;
+    const subs = Object.keys(obj).filter((k) => k.startsWith("q"));
+
+    return (
+      <div>
+        <div className="flex flex-col gap-2">
+          {q.options.map((opt) => {
+            const isSelected = selectedVals.includes(opt);
+            return (
+              <div
+                key={opt}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${
+                  isSelected
+                    ? "bg-[#111] text-white border-[#111]"
+                    : "bg-[#fafafa] text-[#bbb] border-transparent"
+                }`}
+              >
+                <span className={`w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center shrink-0 ${
+                  isSelected ? "border-white" : "border-[#ddd]"
+                }`}>
+                  {isSelected && <span className="w-[8px] h-[8px] rounded-full bg-white" />}
+                </span>
+                <span className="text-[14px]">{opt}</span>
+                {isSelected && opt === "기타" && otherText && (
+                  <span className="text-[13px] opacity-70">: {otherText}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {reason && <p className="mt-3 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">{reason}</p>}
+        {subs.map((sk) => {
+          const sub = obj[sk];
+          if (!sub) return null;
+          const subObj = sub as Record<string, unknown>;
+          return (
+            <p key={sk} className="mt-3 pl-4 border-l-[3px] border-[#03C75A]/20 text-[#555] text-[14px]">
+              → {String(subObj.value)}{subObj.other ? <span className="text-[#999]"> ({String(subObj.other)})</span> : ""}
+            </p>
+          );
+        })}
+      </div>
+    );
+  }
+
+  return renderAnswer(q.key, answer);
 }
 
 function renderAnswer(key: string, answer: unknown): React.ReactNode {
