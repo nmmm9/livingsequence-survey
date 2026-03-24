@@ -190,11 +190,13 @@ export default function AdminPage() {
                       <span className="text-[11px] text-[#999] bg-[#f7f7f7] px-2 py-0.5 rounded-full">{formatTime(row.metadata.completionTimeSeconds as number)}</span>
                     ) : null}
                   </div>
-                  <p className="text-[15px] text-[#111] leading-relaxed mb-3 font-medium">
-                    {formatPreview(row.responses.q1)}
-                  </p>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {formatTags(row.responses)}
+                  {row.responses.q1 && (
+                    <p className="text-[14px] text-[#333] leading-relaxed mb-3 line-clamp-1">
+                      {formatPreview(row.responses.q1)}
+                    </p>
+                  )}
+                  <div className="flex flex-col gap-1.5">
+                    {formatSummary(row.responses)}
                   </div>
                 </button>
               ))}
@@ -344,16 +346,29 @@ function formatPreview(val: unknown): string {
   return "응답 있음";
 }
 
-function formatTags(responses: Record<string, unknown>) {
-  const tags: string[] = [];
-  const q2 = responses.q2 as { value?: string } | undefined;
-  if (q2?.value) tags.push(q2.value);
+function formatSummary(responses: Record<string, unknown>) {
+  const items: { label: string; value: string }[] = [];
+
+  const q2 = responses.q2 as { value?: string; other?: string } | undefined;
+  if (q2?.value) items.push({ label: "선택기준", value: q2.value === "기타" ? q2.other || "기타" : q2.value });
+
   const q7 = responses.q7 as { value?: string } | undefined;
-  if (q7?.value) tags.push(q7.value);
+  if (q7?.value) items.push({ label: "상담시간 단축", value: q7.value });
+
+  const q9 = responses.q9 as { value?: string } | undefined;
+  if (q9?.value) items.push({ label: "매칭 도움", value: q9.value });
+
   const q10 = responses.q10 as { value?: string } | undefined;
-  if (q10?.value) tags.push(q10.value);
-  return tags.slice(0, 3).map((t, i) => (
-    <span key={`${i}-${t}`} className="px-2.5 py-1 bg-[#f0f5f0] rounded-lg text-[11px] text-[#03C75A] font-medium">{t}</span>
+  if (q10?.value) items.push({ label: "프로필 관심", value: q10.value });
+
+  const q11 = responses.q11 as { values?: string[] } | undefined;
+  if (q11?.values?.length) items.push({ label: "매력 솔루션", value: q11.values.join(", ") });
+
+  return items.map((item, i) => (
+    <div key={i} className="flex items-start gap-2 text-[12px]">
+      <span className="text-[#999] shrink-0 w-[70px]">{item.label}</span>
+      <span className="text-[#333] line-clamp-1">{item.value}</span>
+    </div>
   ));
 }
 
