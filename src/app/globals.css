@@ -16,14 +16,22 @@
   --font-figtree: 'Figtree', sans-serif;
 }
 
+html, body {
+  color-scheme: only light !important;
+}
+
 body {
   font-family: var(--font-sans);
   background: #111111 !important;
-  color: #111111;
-  color-scheme: light;
+  color: #111111 !important;
   line-height: 1.6;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  html, body { color-scheme: only light !important; }
+  body { background: #111111 !important; color: #111111 !important; }
 }
 
 .survey-textarea {
