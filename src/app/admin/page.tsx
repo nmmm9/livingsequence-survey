@@ -190,11 +190,11 @@ export default function AdminPage() {
                       <span className="text-[11px] text-[#999] bg-[#f7f7f7] px-2 py-0.5 rounded-full">{formatTime(row.metadata.completionTimeSeconds as number)}</span>
                     ) : null}
                   </div>
-                  {row.responses.q1 && (
+                  {row.responses.q1 ? (
                     <p className="text-[14px] text-[#333] leading-relaxed mb-3 line-clamp-1">
                       {formatPreview(row.responses.q1)}
                     </p>
-                  )}
+                  ) : null}
                   <div className="flex flex-col gap-1.5">
                     {formatSummary(row.responses)}
                   </div>
