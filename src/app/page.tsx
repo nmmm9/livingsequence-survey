@@ -173,8 +173,8 @@ export default function SurveyPage() {
     <div className="max-w-[640px] mx-auto">
       {/* Header */}
       <header className="px-7 pt-[60px] pb-12 text-center bg-[var(--dark)] text-white">
-        <img src="/logo.png" alt="Living Sequence" className="h-[32px] mx-auto mb-5" />
-        <h1 className="font-figtree text-[28px] font-light tracking-tight text-white mb-2.5">
+        <img src="/logo.png" alt="Living Sequence" className="h-[60px] mx-auto mb-5" />
+        <h1 className="font-figtree text-[40px] font-light tracking-tight text-white mb-2.5">
           Feedback
         </h1>
         <div className="text-[13px] text-[var(--muted)] font-light">
@@ -300,13 +300,8 @@ export default function SurveyPage() {
         </button>
       </div>
 
-      <footer className="text-center pt-8 pb-16 bg-[var(--dark)]">
-        <div className="font-figtree text-[11px] tracking-[3px] uppercase text-[var(--muted)]">
-          Thank you
-        </div>
-        <div className="font-figtree text-[16px] font-semibold text-white mt-2 tracking-[2px]">
-          LIVING SEQUENCE
-        </div>
+      <footer className="text-center pt-10 pb-16 bg-[var(--dark)]">
+        <img src="/logo.png" alt="Living Sequence" className="h-[60px] mx-auto" />
       </footer>
 
       {/* Submitting overlay */}
