@@ -173,9 +173,7 @@ export default function SurveyPage() {
     <div className="max-w-[640px] mx-auto">
       {/* Header */}
       <header className="px-7 pt-[60px] pb-12 text-center bg-[var(--dark)] text-white">
-        <div className="font-figtree text-[11px] font-semibold tracking-[5px] uppercase text-white/40 mb-5">
-          Living Sequence
-        </div>
+        <img src="/logo.png" alt="Living Sequence" className="h-[32px] mx-auto mb-5" />
         <h1 className="font-figtree text-[28px] font-light tracking-tight text-white mb-2.5">
           Feedback
         </h1>
