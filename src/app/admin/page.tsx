@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SurveyRow {
   id: string;
@@ -48,26 +48,39 @@ export default function AdminPage() {
   const [selected, setSelected] = useState<SurveyRow | null>(null);
   const [selectedQ, setSelectedQ] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchWithPassword = async (pw: string) => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/responses", {
-        headers: { "x-admin-password": password },
+        headers: { "x-admin-password": pw },
       });
       if (res.status === 401) {
         setError("비밀번호가 틀렸습니다.");
+        sessionStorage.removeItem("admin_pw");
         return;
       }
       const json = await res.json();
       setData(json);
       setAuthed(true);
+      sessionStorage.setItem("admin_pw", pw);
     } catch {
       setError("서버 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchData = () => fetchWithPassword(password || sessionStorage.getItem("admin_pw") || "");
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("admin_pw");
+    if (saved) {
+      setPassword(saved);
+      fetchWithPassword(saved);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!authed) {
     return (
