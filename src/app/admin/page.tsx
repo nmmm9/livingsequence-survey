@@ -245,7 +245,6 @@ export default function AdminPage() {
                   if (typeof a === "object" && "values" in (a as Record<string, unknown>)) return ((a as Record<string, unknown>).values as string[]).length > 0;
                   return false;
                 }).length;
-                const rate = data.length > 0 ? Math.round((count / data.length) * 100) : 0;
 
                 return (
                   <button
@@ -261,13 +260,8 @@ export default function AdminPage() {
                         {type === "text" ? "주관식" : type === "radio" ? "단일선택" : "복수선택"}
                       </span>
                     </div>
-                    <p className="text-[14px] text-[#222] mb-3 font-medium">{label}</p>
-                    <div className="flex items-center gap-3">
-                      <div className="flex-1 h-2 bg-[#eee] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#03C75A] rounded-full transition-all" style={{ width: `${rate}%` }} />
-                      </div>
-                      <span className="text-xs text-[#666] font-figtree font-semibold">{count}/{data.length} <span className="text-[#999] font-normal">({rate}%)</span></span>
-                    </div>
+                    <p className="text-[14px] text-[#222] font-medium">{label}</p>
+                    <div className="text-[12px] text-[#999] mt-2"><span className="text-[#03C75A] font-semibold">{count}</span>명 응답</div>
                   </button>
                 );
               })}
@@ -287,27 +281,12 @@ export default function AdminPage() {
               {(() => {
                 const q = QUESTIONS.find((q) => q.key === selectedQ)!;
                 const answers = data
-                  .map((r) => ({ answer: r.responses[selectedQ], time: r.created_at }))
+                  .map((r, idx) => ({ answer: r.responses[selectedQ], time: r.created_at, num: data.length - idx }))
                   .filter((a) => {
                     if (!a.answer) return false;
                     if (typeof a.answer === "string") return a.answer.length > 0;
                     return true;
                   });
-
-                const valueCounts: Record<string, number> = {};
-                if (q.type === "radio") {
-                  answers.forEach(({ answer }) => {
-                    const val = (answer as Record<string, unknown>).value as string;
-                    if (val) valueCounts[val] = (valueCounts[val] || 0) + 1;
-                  });
-                } else if (q.type === "checkbox") {
-                  answers.forEach(({ answer }) => {
-                    const vals = (answer as Record<string, unknown>).values as string[];
-                    vals?.forEach((v) => { valueCounts[v] = (valueCounts[v] || 0) + 1; });
-                  });
-                }
-                const sortedCounts = Object.entries(valueCounts).sort((a, b) => b[1] - a[1]);
-                const total = answers.length || 1;
 
                 return (
                   <div className="bg-white rounded-2xl overflow-hidden">
@@ -315,61 +294,26 @@ export default function AdminPage() {
                       <div className="text-[12px] font-semibold text-[#03C75A] mb-1 font-figtree">Q{selectedQ.slice(1)}</div>
                       <h2 className="text-[16px] font-semibold text-[#111]">{q.label}</h2>
                       <div className="text-xs text-[#999] mt-1.5">
-                        <span className="text-[#03C75A] font-semibold">{answers.length}명</span> 응답 / 전체 {data.length}명
+                        <span className="text-[#03C75A] font-semibold">{answers.length}명</span> 응답
                       </div>
                     </div>
 
-                    {/* Bar chart */}
-                    {(q.type === "radio" || q.type === "checkbox") && sortedCounts.length > 0 && (
-                      <div className="px-6 py-6 border-b border-[#f0f0f0]">
-                        <div className="space-y-4">
-                          {sortedCounts.map(([label, count], idx) => {
-                            const pct = Math.round((count / total) * 100);
-                            const color = COLORS[idx % COLORS.length];
-                            return (
-                              <div key={label}>
-                                <div className="flex items-center justify-between mb-1.5">
-                                  <span className="text-[14px] text-[#222] font-medium">{label}</span>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[13px] font-semibold font-figtree" style={{ color }}>{pct}%</span>
-                                    <span className="text-[12px] text-[#999] font-figtree">{count}명</span>
-                                  </div>
-                                </div>
-                                <div className="h-3 bg-[#f0f0f0] rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full rounded-full transition-all"
-                                    style={{ width: `${pct}%`, backgroundColor: color }}
-                                  />
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Individual answers */}
-                    <div>
-                      <div className="px-6 py-3 bg-[#fafafa] border-b border-[#f0f0f0]">
-                        <span className="text-[12px] text-[#999] font-medium">개별 응답</span>
-                      </div>
-                      <div className="divide-y divide-[#f0f0f0]">
-                        {answers.map(({ answer, time }, i) => (
-                          <div key={i} className="px-6 py-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-[12px] font-semibold text-[#03C75A] font-figtree">
-                                응답 {answers.length - i}
-                              </span>
-                              <span className="text-[11px] text-[#bbb]">
-                                {new Date(time).toLocaleString("ko-KR")}
-                              </span>
-                            </div>
-                            <div className="text-[15px] text-[#222] leading-[1.8]">
-                              {renderAnswer(selectedQ, answer)}
-                            </div>
+                    <div className="divide-y divide-[#f0f0f0]">
+                      {answers.map(({ answer, time, num }, i) => (
+                        <div key={i} className="px-6 py-5">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-[12px] font-semibold text-[#03C75A] font-figtree">
+                              응답자 {num}
+                            </span>
+                            <span className="text-[11px] text-[#bbb]">
+                              {new Date(time).toLocaleString("ko-KR")}
+                            </span>
                           </div>
-                        ))}
-                      </div>
+                          <div className="text-[15px] text-[#222] leading-[1.8]">
+                            {renderAnswer(selectedQ, answer)}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 );
