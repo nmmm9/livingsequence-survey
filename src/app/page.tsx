@@ -108,10 +108,6 @@ export default function SurveyPage() {
     { key: "q11", label: "11번 문항에 답변해주세요.", check: () => form.q11.values.length > 0 },
     { key: "q11", label: "11번 기타를 선택하셨다면 내용을 적어주세요.", check: () => !form.q11.values.includes("기타") || !!form.q11.other?.trim() },
     { key: "q12", label: "12번 문항에 답변해주세요.", check: () => form.q12.values.length > 0 },
-    { key: "q12", label: "12번 추가 질문에 답변해주세요.", check: () => {
-      const hasNonNone = form.q12.values.length > 0 && !form.q12.values.every((v) => v === "없다");
-      return !hasNonNone || !!form.q12.reason;
-    }},
     { key: "q13", label: "13번 문항에 답변해주세요.", check: () => form.q13.values.length > 0 },
     { key: "q13", label: "13번 기타를 선택하셨다면 내용을 적어주세요.", check: () => !form.q13.values.includes("기타") || !!form.q13.other?.trim() },
     { key: "q15", label: "15번 문항에 답변해주세요.", check: () => form.q15.values.length > 0 },
