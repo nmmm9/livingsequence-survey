@@ -323,10 +323,9 @@ export default function AdminPage() {
                     {/* 주관식: 답변 나열 */}
                     {q.type === "text" && (
                       <div className="px-6 py-4">
-                        <div className="space-y-2.5">
-                          {answers.map(({ answer, num }, i) => (
-                            <div key={i} className="flex gap-3 items-start">
-                              <span className="text-[11px] text-[#03C75A] font-semibold font-figtree shrink-0 mt-0.5">{num}</span>
+                        <div className="space-y-2">
+                          {answers.map(({ answer }, i) => (
+                            <div key={i} className="py-1.5 border-b border-[#f5f5f5] last:border-0">
                               <p className="text-[14px] text-[#333] leading-relaxed">{typeof answer === "string" ? answer : JSON.stringify(answer)}</p>
                             </div>
                           ))}
