@@ -361,10 +361,11 @@ export default function AdminPage() {
                               if (!otherText && !reasonText && subAnswers.length === 0) return null;
                               return (
                                 <div key={i} className="bg-[#fafafa] rounded-xl px-4 py-3">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-[11px] text-[#03C75A] font-bold font-figtree">#{num}</span>
-                                    {mainVal && <span className="text-[12px] text-[#666]">{mainVal}</span>}
-                                  </div>
+                                  {mainVal && (
+                                    <div className="mb-2">
+                                      <span className="text-[12px] text-[#666]">{mainVal}</span>
+                                    </div>
+                                  )}
                                   <div className="space-y-1.5">
                                     {otherText && (
                                       <div className="flex items-start gap-2">
