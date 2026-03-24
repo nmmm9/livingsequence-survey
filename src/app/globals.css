@@ -18,8 +18,9 @@
 
 body {
   font-family: var(--font-sans);
-  background: var(--dark);
-  color: var(--dark);
+  background: #111111 !important;
+  color: #111111;
+  color-scheme: light;
   line-height: 1.6;
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
