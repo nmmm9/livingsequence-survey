@@ -346,22 +346,45 @@ export default function AdminPage() {
                       if (extras.length === 0) return null;
                       return (
                         <div className="px-6 py-4 border-t border-[#f0f0f0]">
-                          <div className="text-[11px] text-[#999] font-medium mb-2">추가 응답</div>
-                          <div className="space-y-2.5">
+                          <div className="text-[11px] text-[#999] font-medium mb-3">추가 응답</div>
+                          <div className="space-y-3">
                             {extras.map(({ answer, num }, i) => {
                               const obj = answer as Record<string, unknown>;
-                              const parts: string[] = [];
-                              if (obj.other) parts.push(`기타: ${String(obj.other)}`);
-                              if (obj.reason) parts.push(String(obj.reason));
+                              const mainVal = obj.value ? String(obj.value) : (obj.values as string[] | undefined)?.join(", ");
+                              const otherText = obj.other ? String(obj.other) : null;
+                              const reasonText = obj.reason ? String(obj.reason) : null;
+                              const subAnswers: { value: string; other?: string }[] = [];
                               Object.keys(obj).filter((k) => k.startsWith("q")).forEach((k) => {
                                 const sub = obj[k] as Record<string, unknown> | null;
-                                if (sub) parts.push(`→ ${String(sub.value)}${sub.other ? ` (${String(sub.other)})` : ""}`);
+                                if (sub) subAnswers.push({ value: String(sub.value), other: sub.other ? String(sub.other) : undefined });
                               });
-                              if (parts.length === 0) return null;
+                              if (!otherText && !reasonText && subAnswers.length === 0) return null;
                               return (
-                                <div key={i} className="flex gap-3 items-start">
-                                  <span className="text-[11px] text-[#03C75A] font-semibold font-figtree shrink-0 mt-0.5">{num}</span>
-                                  <p className="text-[14px] text-[#555] leading-relaxed">{parts.join(" / ")}</p>
+                                <div key={i} className="bg-[#fafafa] rounded-xl px-4 py-3">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-[11px] text-[#03C75A] font-bold font-figtree">#{num}</span>
+                                    {mainVal && <span className="text-[12px] text-[#666]">{mainVal}</span>}
+                                  </div>
+                                  <div className="space-y-1.5">
+                                    {otherText && (
+                                      <div className="flex items-start gap-2">
+                                        <span className="text-[11px] text-[#999] shrink-0 mt-px">기타</span>
+                                        <span className="text-[13px] text-[#333]">{otherText}</span>
+                                      </div>
+                                    )}
+                                    {reasonText && (
+                                      <div className="flex items-start gap-2">
+                                        <span className="text-[11px] text-[#999] shrink-0 mt-px">이유</span>
+                                        <span className="text-[13px] text-[#333]">{reasonText}</span>
+                                      </div>
+                                    )}
+                                    {subAnswers.map((sub, si) => (
+                                      <div key={si} className="flex items-start gap-2">
+                                        <span className="text-[11px] text-[#999] shrink-0 mt-px">추가</span>
+                                        <span className="text-[13px] text-[#333]">{sub.value}{sub.other ? <span className="text-[#999]"> ({sub.other})</span> : ""}</span>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
                               );
                             })}
