@@ -174,7 +174,7 @@ export default function SurveyPage() {
   };
 
   return (
-    <div className="max-w-full mx-auto">
+    <div className="max-w-[640px] mx-auto">
       {/* Header */}
       <header className="px-7 pt-[60px] pb-12 text-center bg-[var(--dark)] text-white">
         <div className="font-figtree text-[11px] font-semibold tracking-[5px] uppercase text-white/40 mb-5">

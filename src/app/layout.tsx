@@ -11,6 +11,7 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: "LIVING SEQUENCE - Feedback",
   description: "소중한 의견을 들려주세요",
+  viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no",
 };
 
 export default function RootLayout({
